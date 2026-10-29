@@ -16,6 +16,11 @@ Status: planning. Public data only. Everything simulated is labeled as simulated
 
 The Situation Manual, correspondence with NOAA and other organizations, raw data files, credentials and participant records.
 
+## License
+
+MIT (see LICENSE). The license covers the code and documentation in this repository only. Public datasets it downloads keep their own licenses and terms, and the Situation Manual is not included.
+
 ## AI disclosure
 
 Developed by DBbun LLC with assistance from Claude Code (Anthropic), model claude-sonnet-5-5 and earlier Claude models used in this project. Update this list as tools change.
+
