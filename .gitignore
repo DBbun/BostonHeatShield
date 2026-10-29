@@ -1,0 +1,21 @@
+# Raw and downloaded data (scripts and manifest are tracked, files are not)
+data_raw/*
+!data_raw/manifest.json
+
+# Submitted documents, correspondence, working files (not for the repo)
+old/
+Submitted*/
+*.docx
+*.pdf
+*.pptx
+
+# Secrets and participant data
+.env
+*.key
+secrets/
+participants/
+
+# Python
+__pycache__/
+*.pyc
+.venv/

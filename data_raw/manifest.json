@@ -1,0 +1,127 @@
+[
+ {
+  "file": "01_boston_social_vulnerability.geojson",
+  "url": "https://bostonopendata-boston.opendata.arcgis.com/api/download/v1/items/34f2c48b670d4b43a617b1540f20efe3/geojson?layers=0",
+  "bytes": 1107422,
+  "sha256": "541a07ff12bc81c67c45760c8fdda859deaa5eb8c46c2d6353607512e9d2e3a2",
+  "downloaded": "2026-10-28T21:19:53",
+  "status": "ok"
+ },
+ {
+  "file": "01_boston_social_vulnerability.csv",
+  "url": "https://bostonopendata-boston.opendata.arcgis.com/api/download/v1/items/34f2c48b670d4b43a617b1540f20efe3/csv?layers=0",
+  "bytes": 21778,
+  "sha256": "ad9f36e5a2e49769aff122d2bf3a2445538db711bade3d8ce9d6fc884c43b12f",
+  "downloaded": "2026-10-28T21:19:54",
+  "status": "ok"
+ },
+ {
+  "file": "03_urban_forest_priority_zones.geojson",
+  "url": "https://data.boston.gov/dataset/c8c042fb-fa02-4662-a523-593c21bb3b87/resource/41bb1f69-18a8-4016-bd82-37267abea881/download/priority_zones.geojson",
+  "status": "FAILED: HTTP Error 403: Forbidden"
+ },
+ {
+  "file": "03_urban_forest_ej_tracts.geojson",
+  "url": "https://data.boston.gov/dataset/c8c042fb-fa02-4662-a523-593c21bb3b87/resource/37163833-9fc4-4a83-a2ec-7250e4313467/download/priority_zone_indicators_priority_ej_census_tracts.geojson",
+  "status": "FAILED: HTTP Error 403: Forbidden"
+ },
+ {
+  "file": "03_urban_forest_heat_event_hours.geojson",
+  "url": "https://data.boston.gov/dataset/c8c042fb-fa02-4662-a523-593c21bb3b87/resource/b6ed8b78-0778-4689-aeaa-dd640fc8d6cc/download/priority_zone_indicators_priority_heat_event_hours_.geojson",
+  "status": "FAILED: HTTP Error 403: Forbidden"
+ },
+ {
+  "file": "03_urban_forest_holc.geojson",
+  "url": "https://data.boston.gov/dataset/c8c042fb-fa02-4662-a523-593c21bb3b87/resource/eda9e38e-04f4-4b64-9a28-a0368a9d9117/download/priority_zone_indicators_priority_holc_boundaries.geojson",
+  "status": "FAILED: HTTP Error 403: Forbidden"
+ },
+ {
+  "file": "03_urban_forest_low_canopy_tracts.geojson",
+  "url": "https://data.boston.gov/dataset/c8c042fb-fa02-4662-a523-593c21bb3b87/resource/53e1312d-aded-42c6-96f0-7f257f3c914d/download/priority_zone_indicators_priority_low_canopy_census_tracts.geojson",
+  "status": "FAILED: HTTP Error 403: Forbidden"
+ },
+ {
+  "file": "03_urban_forest_datadictionary.xlsx",
+  "url": "https://data.boston.gov/dataset/c8c042fb-fa02-4662-a523-593c21bb3b87/resource/58d4715d-29ca-4cb2-be79-1a329c74e0a5/download/datadictionary.xlsx",
+  "status": "FAILED: HTTP Error 403: Forbidden"
+ },
+ {
+  "file": "04_tiger2024_ma_tracts.zip",
+  "url": "https://www2.census.gov/geo/tiger/TIGER2024/TRACT/tl_2024_25_tract.zip",
+  "bytes": 4506627,
+  "sha256": "74ca27e8dd9ed393e43b75e237ff7d652ef072e413532821847de58a7aa4bfd4",
+  "downloaded": "2026-10-28T21:19:58",
+  "status": "ok"
+ },
+ {
+  "file": "05_cdc_svi2022_ma.csv",
+  "url": "https://svi.cdc.gov/Documents/Data/2022/csv/states/Massachusetts.csv",
+  "bytes": 1189804,
+  "sha256": "9e38e15b91041909fc58bdd56db677d9073598f9f8080048b71d16dd38f8b81e",
+  "downloaded": "2026-10-28T21:19:58",
+  "status": "ok"
+ },
+ {
+  "file": "06_cdc_places_tract_ma.csv",
+  "url": "https://data.cdc.gov/resource/yjkw-uj5s.csv?stateabbr=MA&$limit=50000",
+  "bytes": 1546226,
+  "sha256": "197076c20fb508eaee9ab0ce08fee54dde016b8031787b6f1bda01176ace8e4e",
+  "downloaded": "2026-10-28T21:20:00",
+  "status": "ok"
+ },
+ {
+  "file": "07_lace2023_tract.csv",
+  "url": "https://www2.census.gov/programs-surveys/demo/datasets/lace/2023/LACE_23_Tract.csv",
+  "bytes": 11142049,
+  "sha256": "a98b6f72c88e26068c3bcee22335d152da82c285ae6fbde0927639130560b75a",
+  "downloaded": "2026-10-28T21:20:01",
+  "status": "ok"
+ },
+ {
+  "file": "07_lace2023_county.csv",
+  "url": "https://www2.census.gov/programs-surveys/demo/datasets/lace/2023/LACE_23_County.csv",
+  "bytes": 315547,
+  "sha256": "dfa77326fc436649be180c9c09809a61cce11ebb486c63f41b36885e70cc8efd",
+  "downloaded": "2026-10-28T21:20:02",
+  "status": "ok"
+ },
+ {
+  "file": "07_lace2023_quick_guide.pdf",
+  "url": "https://www2.census.gov/programs-surveys/demo/technical-documentation/lace/2023-LACE-Quick-Guide.pdf",
+  "bytes": 673794,
+  "sha256": "1fe1b88bd5d0a3dce25b0bdb663306adb710cc20c71b8fd65a26f087d61731db",
+  "downloaded": "2026-10-28T21:20:02",
+  "status": "ok"
+ },
+ {
+  "file": "08_mbta_gtfs.zip",
+  "url": "https://cdn.mbta.com/MBTA_GTFS.zip",
+  "bytes": 22102455,
+  "sha256": "fdbbe7903ee7519edf3728df9ba65da18e17cb193545169daaf0763d1e44131c",
+  "downloaded": "2026-10-28T21:20:04",
+  "status": "ok"
+ },
+ {
+  "file": "09_massgis_hospitals_pt.zip",
+  "url": "https://s3.us-east-1.amazonaws.com/download.massgis.digital.mass.gov/shapefiles/state/hospitals_pt.zip",
+  "status": "FAILED: HTTP Error 404: Not Found"
+ },
+ {
+  "file": "02_community_centers.geojson",
+  "url": "https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/Community_Centers/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson",
+  "bytes": 9106,
+  "features": 35,
+  "sha256": "ca587a7ecfba38139ad3007ee5a4fafe4abf88b4a387562050575711041dd991",
+  "downloaded": "2026-10-28T21:20:27",
+  "status": "ok"
+ },
+ {
+  "file": "02_community_center_pools.geojson",
+  "url": "https://services.arcgis.com/sFnw0xNflSi8J0uh/arcgis/rest/services/Community_center_pools/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson",
+  "bytes": 5129,
+  "features": 18,
+  "sha256": "d616e62344e5b6b371b23496f8e41bcb99a3e31aadedfa620049d55ee48717fb",
+  "downloaded": "2026-10-28T21:20:27",
+  "status": "ok"
+ }
+]
