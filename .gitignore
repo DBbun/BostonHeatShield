@@ -9,6 +9,9 @@ Submitted*/
 *.pdf
 *.pptx
 
+# Derived tables (rebuild with src/build_tract_table.py)
+data_processed/
+
 # Secrets and participant data
 .env
 *.key
@@ -19,3 +22,4 @@ participants/
 __pycache__/
 *.pyc
 .venv/
+
