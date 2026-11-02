@@ -35,6 +35,10 @@
   .pop td { padding:2px 8px 2px 0; vertical-align:top; }
   .pop td.v { text-align:right; white-space:nowrap; }
   .pop .src { color:#666; font-size:11px; margin-top:6px; }
+  .join { padding:10px 16px; border-bottom:1px solid var(--line); font-size:14px; }
+  .join a.btn { display:inline-block; margin-left:8px; padding:5px 12px; border:1px solid var(--fg);
+                border-radius:4px; color:var(--fg); text-decoration:none; font-weight:bold; }
+  .join small { display:block; color:var(--muted); margin-top:4px; font-size:12px; }
   @media (max-width:600px) { header h1 { font-size:16px; } .bar { gap:8px 14px; } }
 </style>
 </head>
@@ -43,6 +47,13 @@
   <h1>Boston HeatShield: neighborhood heat and vulnerability map</h1>
   <p>Planning demo. Public data only. Not a forecast, not real-time, and not an official city or NOAA tool.</p>
 </header>
+<div class="join">
+  Boston HeatShield won NOAA's 2026 Heat Tabletop Design Challenge and is being built into a largely online exercise.
+  Want to take part, as a resident, an agency, an organization or an observer?
+  <a class="btn" href="mailto:uri.kartoun@dbbun.com?subject=Boston%20HeatShield%3A%20I%20want%20to%20take%20part&body=Name%3A%0D%0AHow%20I%20would%20take%20part%20(resident%2C%20agency%2C%20organization%2C%20observer)%3A%0D%0AOrganization%20(optional)%3A%0D%0ANeighborhood%20(optional)%3A%0D%0A">Sign up by email</a>
+  <small>The exercise is in early planning and no dates are set. I will use your details only to contact you about it.
+  This is an independent DBbun project; no city agency or NOAA office is running it.</small>
+</div>
 <div class="bar">
   <label>Shade tracts by
     <select id="measure"></select>
