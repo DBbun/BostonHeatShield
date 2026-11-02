@@ -88,6 +88,9 @@ def main() -> None:
     # Census LACE 2023 air conditioning (experimental, modeled)
     la = pd.read_csv(RAW / "07_lace2023_tract.csv", dtype={"GEO_ID": str},
                      usecols=["GEO_ID", "HSE_OCC_E", "AC_PE", "AC_PM", "NO_AC_E", "NO_AC_PE", "NO_AC_PM"])
+    num_cols = [c for c in la.columns if c not in ("GEO_ID",)]
+    # Census codes for "not available" (-666666666 estimate, -222222222 margin of error) are not values
+    la[num_cols] = la[num_cols].where(la[num_cols] > -100)
     la["GEOID"] = la["GEO_ID"].str[-11:]
     la = la.drop(columns="GEO_ID").rename(columns={c: f"lace_{c}" for c in la.columns if c != "GEOID"})
     boston = boston.merge(la, on="GEOID", how="left")
@@ -113,6 +116,9 @@ def main() -> None:
         boston[col] = boston["GEOID"].map(joined.groupby("GEOID").size()).fillna(0).astype(int)
 
     boston = boston.sort_values("GEOID").reset_index(drop=True)
+    # Guard: no agency "missing value" code may survive into the table
+    numeric = boston.drop(columns="geometry").select_dtypes("number")
+    assert not (numeric <= -100).any().any(), "sentinel missing-value code left in table"
     boston.drop(columns="geometry").to_csv(OUT / "boston_tracts.csv", index=False)
     boston.to_file(OUT / "boston_tracts.geojson", driver="GeoJSON")
 
