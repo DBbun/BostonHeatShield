@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boston HeatShield Map</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root { --bg:#fff; --fg:#1a1a1a; --muted:#555; --panel:#fff; --line:#d0d0d0; --accent:#1a1a1a; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161616; --fg:#eee; --muted:#aaa; --panel:#222; --line:#444; --accent:#eee; }
+  }
+  html, body { height:100%; margin:0; }
+  body { font-family: Arial, Helvetica, sans-serif; background:var(--bg); color:var(--fg);
+         display:flex; flex-direction:column; }
+  header { padding:10px 16px; border-bottom:1px solid var(--line); }
+  header h1 { font-size:18px; margin:0 0 2px; }
+  header p { margin:0; font-size:13px; color:var(--muted); }
+  .bar { display:flex; flex-wrap:wrap; gap:12px 20px; align-items:center; padding:8px 16px;
+         border-bottom:1px solid var(--line); font-size:14px; }
+  .bar label { display:flex; gap:6px; align-items:center; }
+  select { font:inherit; padding:4px 6px; background:var(--panel); color:var(--fg);
+           border:1px solid var(--line); border-radius:4px; max-width:100%; }
+  #map { flex:1; min-height:320px; }
+  footer { padding:8px 16px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); }
+  footer p { margin:2px 0; }
+  .legend { background:var(--panel); color:var(--fg); padding:8px 10px; border:1px solid var(--line);
+            border-radius:4px; font-size:12px; line-height:1.5; max-width:230px; }
+  .legend b { display:block; margin-bottom:4px; }
+  .legend i { display:inline-block; width:14px; height:14px; margin-right:6px; vertical-align:-2px;
+              border:1px solid #888; }
+  .pop h3 { margin:0 0 2px; font-size:14px; }
+  .pop .sub { color:#666; font-size:12px; margin-bottom:6px; }
+  .pop table { border-collapse:collapse; font-size:12px; }
+  .pop td { padding:2px 8px 2px 0; vertical-align:top; }
+  .pop td.v { text-align:right; white-space:nowrap; }
+  .pop .src { color:#666; font-size:11px; margin-top:6px; }
+  @media (max-width:600px) { header h1 { font-size:16px; } .bar { gap:8px 14px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Boston HeatShield: neighborhood heat and vulnerability map</h1>
+  <p>Planning demo. Public data only. Not a forecast, not real-time, and not an official city or NOAA tool.</p>
+</header>
+<div class="bar">
+  <label>Shade tracts by
+    <select id="measure"></select>
+  </label>
+  <label><input type="checkbox" id="fac" checked> Community centers and pools</label>
+  <label><input type="checkbox" id="focus" checked> Outline scenario neighborhoods</label>
+</div>
+<div id="map" role="application" aria-label="Map of Boston census tracts"></div>
+<footer>
+  <p>Sources: Census Bureau LACE 2023 (experimental estimates of homes without air conditioning, with margins of error);
+     CDC/ATSDR Social Vulnerability Index 2022 (American Community Survey estimates);
+     CDC PLACES (model-based small-area estimates from health surveys); City of Boston community centers and pools;
+     Census TIGER 2024 tract boundaries; Climate Ready Boston neighborhood names. Basemap: OpenStreetMap contributors.</p>
+  <p>All shaded values are published estimates, not exact counts. Gray tracts have no published value (mostly harbor
+     islands, the airport, and parks). Neighborhood names marked "approx." come from a 2010 tract that overlaps the 2020
+     tract. Outlined neighborhoods are the exercise's scenario areas that the neighborhood source lists
+     (Roxbury, East Boston, Dorchester); Chinatown is not a separate unit in that source.</p>
+  <p>Built by DBbun LLC with Claude Code (Anthropic), model claude-sonnet-5-5. Source code:
+     <a href="https://github.com/DBbun/BostonHeatShield">github.com/DBbun/BostonHeatShield</a></p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="data.js"></script>
+<script>
+const MEASURES = [
+  { key:"noac",   label:"Homes without air conditioning (%)",           src:"Census LACE 2023, experimental estimate" },
+  { key:"svi",    label:"Overall social vulnerability (0 to 1 percentile)", src:"CDC/ATSDR SVI 2022" },
+  { key:"age65",  label:"Residents age 65 and older (%)",               src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
+  { key:"pov",    label:"Residents below 150% of poverty (%)",          src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
+  { key:"disab",  label:"Residents with a disability (%)",              src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
+  { key:"noveh",  label:"Households with no vehicle (%)",               src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
+  { key:"limeng", label:"Residents with limited English (%)",           src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
+  { key:"asthma", label:"Adults with current asthma (%)",               src:"CDC PLACES, model-based estimate" },
+  { key:"copd",   label:"Adults with COPD (%)",                         src:"CDC PLACES, model-based estimate" },
+  { key:"diabetes", label:"Adults with diabetes (%)",                   src:"CDC PLACES, model-based estimate" },
+];
+const COLORS = ["#ffffb2","#fecc5c","#fd8d3c","#f03b20","#bd0026"];
+const FOCUS = ["Roxbury","East Boston","Dorchester"];
+
+const map = L.map("map", { zoomControl:true }).setView([42.33, -71.07], 12);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom:18, attribution:"&copy; OpenStreetMap contributors" }).addTo(map);
+
+const sel = document.getElementById("measure");
+MEASURES.forEach((m,i) => sel.add(new Option(m.label, i)));
+
+let current = MEASURES[0], breaks = [], layer, legend;
+
+function computeBreaks(key) {
+  const v = TRACTS.features.map(f => f.properties[key]).filter(x => x !== null).sort((a,b)=>a-b);
+  const q = p => v[Math.min(v.length-1, Math.floor(p*v.length))];
+  return [q(0.2), q(0.4), q(0.6), q(0.8)];
+}
+function colorFor(x) {
+  if (x === null || x === undefined) return "#cfcfcf";
+  let i = 0; while (i < breaks.length && x >= breaks[i]) i++;
+  return COLORS[i];
+}
+const fmt = (x, d=1) => x === null || x === undefined ? "no data" : Number(x).toFixed(d);
+
+function popup(p) {
+  const hood = p.hood ? p.hood + (p.hood_approx ? " (approx.)" : "") : "Boston";
+  const noacTxt = p.noac === null ? "no data" :
+    `${fmt(p.noac)}%` + (p.noac_m !== null ? ` (&plusmn;${fmt(p.noac_m)})` : "") +
+    (p.noac_n !== null && p.occ ? `, about ${p.noac_n} of ${p.occ} homes` : "");
+  const rows = [
+    ["Population (SVI 2022)", p.pop === null ? "no data" : p.pop.toLocaleString()],
+    ["Homes without AC", noacTxt],
+    ["Social vulnerability (0-1)", fmt(p.svi, 2)],
+    ["Age 65 and older", p.age65 === null ? "no data" : fmt(p.age65) + "%"],
+    ["Below 150% of poverty", p.pov === null ? "no data" : fmt(p.pov) + "%"],
+    ["Disability", p.disab === null ? "no data" : fmt(p.disab) + "%"],
+    ["No vehicle", p.noveh === null ? "no data" : fmt(p.noveh) + "%"],
+    ["Limited English", p.limeng === null ? "no data" : fmt(p.limeng) + "%"],
+    ["Asthma, COPD, diabetes", [p.asthma,p.copd,p.diabetes].map(x => x===null ? "n/a" : fmt(x)+"%").join(" / ")],
+    ["Community centers / pools", `${p.n_cc} / ${p.n_pool}`],
+  ];
+  return `<div class="pop"><h3>${hood}</h3><div class="sub">Census tract ${p.id}</div>
+    <table>${rows.map(r => `<tr><td>${r[0]}</td><td class="v">${r[1]}</td></tr>`).join("")}</table>
+    <div class="src">Published estimates, not exact counts. Asthma/COPD/diabetes are CDC PLACES model-based estimates.</div></div>`;
+}
+
+function style(f) {
+  const p = f.properties, focus = document.getElementById("focus").checked && FOCUS.includes(p.hood);
+  return { fillColor: colorFor(p[current.key]), fillOpacity:0.75,
+           color: focus ? "#000" : "#777", weight: focus ? 2.5 : 0.6 };
+}
+
+function draw() {
+  breaks = computeBreaks(current.key);
+  if (layer) map.removeLayer(layer);
+  layer = L.geoJSON(TRACTS, { style, onEachFeature:(f, l) => {
+    l.bindPopup(popup(f.properties), { maxWidth:320 });
+    l.on("mouseover", () => l.setStyle({ weight:3 }));
+    l.on("mouseout", () => layer.resetStyle(l));
+  }}).addTo(map);
+  layer.bringToBack();
+  if (legend) map.removeControl(legend);
+  legend = L.control({ position:"bottomright" });
+  legend.onAdd = () => {
+    const d = L.DomUtil.create("div", "legend");
+    const lo = (x) => x.toFixed(current.key === "svi" ? 2 : 1);
+    const edges = [null, ...breaks, null];
+    let h = `<b>${current.label}</b>`;
+    COLORS.forEach((c,i) => {
+      const a = edges[i], b = edges[i+1];
+      const t = a === null ? `below ${lo(b)}` : b === null ? `${lo(a)} and above` : `${lo(a)} to ${lo(b)}`;
+      h += `<i style="background:${c}"></i>${t}<br>`;
+    });
+    h += `<i style="background:#cfcfcf"></i>no published value<br><span style="color:var(--muted)">${current.src}.
+      Shades are fifths of Boston's tracts.</span>`;
+    d.innerHTML = h; return d;
+  };
+  legend.addTo(map);
+}
+
+const facLayer = L.layerGroup();
+FACILITIES.forEach(f => {
+  L.circleMarker([f.lat, f.lng], { radius:5, color:"#000", weight:1.5,
+    fillColor: f.kind === "Pool" ? "#1f78b4" : "#fff", fillOpacity:1 })
+   .bindPopup(`<div class="pop"><h3>${f.name}</h3><div class="sub">${f.kind}${f.hood ? ", " + f.hood : ""}</div>
+     <div class="src">City of Boston list. Listing does not mean the site is open as a cooling center.</div></div>`)
+   .addTo(facLayer);
+});
+facLayer.addTo(map);
+
+sel.addEventListener("change", () => { current = MEASURES[+sel.value]; draw(); });
+document.getElementById("fac").addEventListener("change", e => e.target.checked ? facLayer.addTo(map) : map.removeLayer(facLayer));
+document.getElementById("focus").addEventListener("change", () => layer.setStyle(style));
+draw();
+</script>
+</body>
+</html>
