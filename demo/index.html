@@ -48,13 +48,14 @@
     <select id="measure"></select>
   </label>
   <label><input type="checkbox" id="fac" checked> Community centers and pools</label>
+  <label><input type="checkbox" id="transit" checked> MBTA subway, light rail and stations</label>
   <label><input type="checkbox" id="focus" checked> Outline scenario neighborhoods</label>
 </div>
 <div id="map" role="application" aria-label="Map of Boston census tracts"></div>
 <footer>
   <p>Sources: Census Bureau LACE 2023 (experimental estimates of homes without air conditioning, with margins of error);
      CDC/ATSDR Social Vulnerability Index 2022 (American Community Survey estimates);
-     CDC PLACES (model-based small-area estimates from health surveys); City of Boston community centers and pools;
+     CDC PLACES (model-based small-area estimates from health surveys); City of Boston community centers and pools; MBTA GTFS schedule feed (Fall 2026 edition, scheduled routes only, no service alerts);
      Census TIGER 2024 tract boundaries; Climate Ready Boston neighborhood names. Basemap: OpenStreetMap contributors.</p>
   <p>All shaded values are published estimates, not exact counts. Gray tracts have no published value (mostly harbor
      islands, the airport, and parks). Neighborhood names marked "approx." come from a 2010 tract that overlaps the 2020
@@ -119,6 +120,8 @@ function popup(p) {
     ["Limited English", p.limeng === null ? "no data" : fmt(p.limeng) + "%"],
     ["Asthma, COPD, diabetes", [p.asthma,p.copd,p.diabetes].map(x => x===null ? "n/a" : fmt(x)+"%").join(" / ")],
     ["Community centers / pools", `${p.n_cc} / ${p.n_pool}`],
+    ["MBTA bus stops", p.n_bus],
+    ["Subway / light rail / commuter rail stations", `${p.n_rapid} / ${p.n_cr}`],
   ];
   return `<div class="pop"><h3>${hood}</h3><div class="sub">Census tract ${p.id}</div>
     <table>${rows.map(r => `<tr><td>${r[0]}</td><td class="v">${r[1]}</td></tr>`).join("")}</table>
@@ -169,8 +172,22 @@ FACILITIES.forEach(f => {
 });
 facLayer.addTo(map);
 
+const transitLayer = L.layerGroup();
+L.geoJSON(TRANSIT_LINES, { style: f => ({ color:f.properties.color, weight:4, opacity:0.95 }),
+  onEachFeature:(f, l) => l.bindTooltip(f.properties.name, { sticky:true }) }).addTo(transitLayer);
+STATIONS.forEach(s => {
+  const rapid = s.kind.startsWith("Subway");
+  L.circleMarker([s.lat, s.lng], { radius: rapid ? 4 : 3, color:"#000", weight:1,
+    fillColor: rapid ? "#fff" : "#888", fillOpacity:1 })
+   .bindPopup(`<div class="pop"><h3>${s.name}</h3><div class="sub">${s.kind}${s.town ? ", " + s.town : ""}</div>
+     <div class="src">MBTA GTFS schedule data. Does not show current service or closures.</div></div>`)
+   .addTo(transitLayer);
+});
+transitLayer.addTo(map);
+
 sel.addEventListener("change", () => { current = MEASURES[+sel.value]; draw(); });
 document.getElementById("fac").addEventListener("change", e => e.target.checked ? facLayer.addTo(map) : map.removeLayer(facLayer));
+document.getElementById("transit").addEventListener("change", e => e.target.checked ? transitLayer.addTo(map) : map.removeLayer(transitLayer));
 document.getElementById("focus").addEventListener("change", () => layer.setStyle(style));
 draw();
 </script>

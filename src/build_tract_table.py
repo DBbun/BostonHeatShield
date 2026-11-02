@@ -8,6 +8,7 @@ Inputs (all public, see data_raw/manifest.json):
                                                       neighborhood name, vulnerability shares
   05 CDC SVI 2022, 06 CDC PLACES, 07 Census LACE 2023 (all 2020 tracts)
   02 Community centers and pools (points)
+  08 MBTA GTFS (stations and bus stops, counted per tract)
 
 Outputs: boston_tracts.csv and boston_tracts.geojson in out_dir, plus a coverage report.
 Everything here is real public data or a modeled estimate. LACE is experimental and modeled.
@@ -18,6 +19,8 @@ from pathlib import Path
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+
+from gtfs_utils import load_stops
 
 RAW = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[1] / "data_raw"
 OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(__file__).resolve().parents[1] / "data_processed"
@@ -97,6 +100,13 @@ def main() -> None:
             joined = pd.concat([joined[["GEOID"]], snap[["GEOID"]]])
         boston[f"n_{name}"] = boston["GEOID"].map(joined.groupby("GEOID").size()).fillna(0).astype(int)
 
+    # MBTA stops and stations from the GTFS feed (rapid transit = subway and Green/Mattapan light rail)
+    transit = load_stops(RAW / "08_mbta_gtfs.zip")
+    for key, col in [("rapid", "n_rapid_stations"), ("commuter", "n_commuter_rail_stations"),
+                     ("bus", "n_bus_stops")]:
+        joined = gpd.sjoin(transit[key], boston[["GEOID", "geometry"]], predicate="within")
+        boston[col] = boston["GEOID"].map(joined.groupby("GEOID").size()).fillna(0).astype(int)
+
     boston = boston.sort_values("GEOID").reset_index(drop=True)
     boston.drop(columns="geometry").to_csv(OUT / "boston_tracts.csv", index=False)
     boston.to_file(OUT / "boston_tracts.geojson", driver="GeoJSON")
@@ -109,6 +119,10 @@ def main() -> None:
         print(f"  {col}: {boston[col].notna().sum()}/{n} non-missing")
     print(f"  community centers placed: {boston['n_community_centers'].sum()}/35, "
           f"pools placed: {boston['n_pools'].sum()}/18")
+    print(f"  rapid transit stations: {boston['n_rapid_stations'].sum()}, commuter rail stations: "
+          f"{boston['n_commuter_rail_stations'].sum()}, bus stops: {boston['n_bus_stops'].sum()}; "
+          f"tracts with no bus stop or station: "
+          f"{int(((boston['n_bus_stops'] + boston['n_rapid_stations'] + boston['n_commuter_rail_stations']) == 0).sum())}")
     print(f"  total population (SVI 2022): {boston['svi_E_TOTPOP'].sum():,.0f}")
     print(f"Wrote {OUT / 'boston_tracts.csv'} and {OUT / 'boston_tracts.geojson'}")
 
