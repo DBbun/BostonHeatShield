@@ -28,6 +28,7 @@ OUT.mkdir(exist_ok=True)
 
 SVI_COLS = ["E_TOTPOP", "EP_POV150", "EP_AGE65", "EP_AGE17", "EP_DISABL", "EP_NOVEH",
             "EP_LIMENG", "EP_MINRTY", "EP_MUNIT", "EP_NOINT", "RPL_THEMES", "RPL_THEME1",
+            "MP_POV150", "MP_AGE65", "MP_DISABL", "MP_NOVEH", "MP_LIMENG",   # margins of error (90%)
             "RPL_THEME2", "RPL_THEME3", "RPL_THEME4"]
 PLACES_COLS = ["casthma", "copd", "chd", "diabetes", "bphigh", "disability", "phlth", "loneliness"]
 CRB_COUNTS = ["TotDis", "TotChild", "OlderAdult", "Low_to_No", "LEP", "POC2", "MedIllnes"]
@@ -75,9 +76,13 @@ def main() -> None:
     boston = boston.merge(svi, left_on="GEOID", right_on="FIPS", how="left").drop(columns="FIPS")
 
     # CDC PLACES (crude prevalence, model-based small-area estimates)
+    ci_cols = [f"{c}_crude95ci" for c in PLACES_COLS]
     pl = pd.read_csv(RAW / "06_cdc_places_tract_ma.csv", dtype={"tractfips": str},
-                     usecols=["tractfips"] + [f"{c}_crudeprev" for c in PLACES_COLS])
+                     usecols=["tractfips"] + [f"{c}_crudeprev" for c in PLACES_COLS] + ci_cols)
     pl = pl.rename(columns={f"{c}_crudeprev": f"places_{c}_pct" for c in PLACES_COLS})
+    for c in PLACES_COLS:  # 95% confidence interval arrives as text like "( 9.6, 12.3)"
+        ci = pl.pop(f"{c}_crude95ci").str.extract(r"\(\s*([\d.]+)\s*,\s*([\d.]+)\s*\)").astype(float)
+        pl[f"places_{c}_lo"], pl[f"places_{c}_hi"] = ci[0], ci[1]
     boston = boston.merge(pl, left_on="GEOID", right_on="tractfips", how="left").drop(columns="tractfips")
 
     # Census LACE 2023 air conditioning (experimental, modeled)

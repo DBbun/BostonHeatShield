@@ -57,7 +57,7 @@
      CDC/ATSDR Social Vulnerability Index 2022 (American Community Survey estimates);
      CDC PLACES (model-based small-area estimates from health surveys); City of Boston community centers and pools; MBTA GTFS schedule feed (Fall 2026 edition, scheduled routes only, no service alerts);
      Census TIGER 2024 tract boundaries; Climate Ready Boston neighborhood names. Basemap: OpenStreetMap contributors.</p>
-  <p>All shaded values are published estimates, not exact counts. Gray tracts have no published value (mostly harbor
+  <p>All shaded values are published estimates, not exact counts. Popups show each agency's own margin of error: 90% for Census-based values (LACE, SVI), 95% confidence intervals for CDC PLACES. Small tracts have wide margins, so differences between neighboring tracts may not be meaningful. Gray tracts have no published value (mostly harbor
      islands, the airport, and parks). Neighborhood names marked "approx." come from a 2010 tract that overlaps the 2020
      tract. Outlined neighborhoods are the exercise's scenario areas that the neighborhood source lists
      (Roxbury, East Boston, Dorchester); Chinatown is not a separate unit in that source.</p>
@@ -104,6 +104,10 @@ function colorFor(x) {
 }
 const fmt = (x, d=1) => x === null || x === undefined ? "no data" : Number(x).toFixed(d);
 
+// ACS-based SVI values: estimate with its 90% margin of error. PLACES: estimate with its 95% confidence interval.
+const acs = (v, m) => v === null ? "no data" : fmt(v) + "%" + (m !== null && m !== undefined ? ` (&plusmn;${fmt(m)})` : "");
+const ci = (v, lo, hi) => v === null ? "no data" : fmt(v) + "%" + (lo !== null && hi !== null ? ` (${fmt(lo)} to ${fmt(hi)})` : "");
+
 function popup(p) {
   const hood = p.hood ? p.hood + (p.hood_approx ? " (approx.)" : "") : "Boston";
   const noacTxt = p.noac === null ? "no data" :
@@ -113,19 +117,21 @@ function popup(p) {
     ["Population (SVI 2022)", p.pop === null ? "no data" : p.pop.toLocaleString()],
     ["Homes without AC", noacTxt],
     ["Social vulnerability (0-1)", fmt(p.svi, 2)],
-    ["Age 65 and older", p.age65 === null ? "no data" : fmt(p.age65) + "%"],
-    ["Below 150% of poverty", p.pov === null ? "no data" : fmt(p.pov) + "%"],
-    ["Disability", p.disab === null ? "no data" : fmt(p.disab) + "%"],
-    ["No vehicle", p.noveh === null ? "no data" : fmt(p.noveh) + "%"],
-    ["Limited English", p.limeng === null ? "no data" : fmt(p.limeng) + "%"],
-    ["Asthma, COPD, diabetes", [p.asthma,p.copd,p.diabetes].map(x => x===null ? "n/a" : fmt(x)+"%").join(" / ")],
+    ["Age 65 and older", acs(p.age65, p.age65_m)],
+    ["Below 150% of poverty", acs(p.pov, p.pov_m)],
+    ["Disability", acs(p.disab, p.disab_m)],
+    ["No vehicle", acs(p.noveh, p.noveh_m)],
+    ["Limited English", acs(p.limeng, p.limeng_m)],
+    ["Current asthma", ci(p.asthma, p.asthma_lo, p.asthma_hi)],
+    ["COPD", ci(p.copd, p.copd_lo, p.copd_hi)],
+    ["Diabetes", ci(p.diabetes, p.diabetes_lo, p.diabetes_hi)],
     ["Community centers / pools", `${p.n_cc} / ${p.n_pool}`],
     ["MBTA bus stops", p.n_bus],
     ["Subway / light rail / commuter rail stations", `${p.n_rapid} / ${p.n_cr}`],
   ];
   return `<div class="pop"><h3>${hood}</h3><div class="sub">Census tract ${p.id}</div>
     <table>${rows.map(r => `<tr><td>${r[0]}</td><td class="v">${r[1]}</td></tr>`).join("")}</table>
-    <div class="src">Published estimates, not exact counts. Asthma/COPD/diabetes are CDC PLACES model-based estimates.</div></div>`;
+    <div class="src">Published estimates, not exact counts. Poverty, age, disability, vehicle and English values show the 90% margin of error (&plusmn;); asthma, COPD and diabetes show the 95% confidence interval. The LACE air conditioning margin is also shown.</div></div>`;
 }
 
 function style(f) {
