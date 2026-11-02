@@ -36,7 +36,7 @@ CRB_COUNTS = ["TotDis", "TotChild", "OlderAdult", "Low_to_No", "LEP", "POC2", "M
 
 def read_tracts() -> gpd.GeoDataFrame:
     t = gpd.read_file(f"zip://{RAW / '04_tiger2024_ma_tracts.zip'}")
-    return t[t.COUNTYFP == "025"][["GEOID", "ALAND", "geometry"]].to_crs(4326)
+    return t[t.COUNTYFP.isin(["025", "017"])][["GEOID", "ALAND", "geometry"]].to_crs(4326)
 
 
 def read_crb() -> gpd.GeoDataFrame:
@@ -53,17 +53,24 @@ def main() -> None:
     tracts = read_tracts()
     crb = read_crb()
 
-    # Boston study tracts: 2020 tracts whose representative point lies inside the city outline.
-    city = crb.geometry.union_all()
+    # Study tracts: Boston (2020 tracts whose representative point lies inside the city outline),
+    # plus Cambridge and Somerville (inside the Census county subdivision for each city).
+    outline = crb.geometry.union_all()
     pts = tracts.geometry.representative_point()
-    boston = tracts[pts.within(city)].copy()
+    tracts["city"] = np.where(pts.within(outline), "Boston", None)
+    cousub = gpd.read_file(f"zip://{RAW / '10_tiger2024_ma_cousub.zip'}").to_crs(4326)
+    for name in ("Cambridge", "Somerville"):
+        poly = cousub[(cousub.NAME == name) & (cousub.COUNTYFP == "017")].geometry.union_all()
+        tracts.loc[pts.within(poly) & tracts["city"].isna(), "city"] = name
+    boston = tracts[tracts["city"].notna()].copy()
 
     # Neighborhood name and CRB shares: exact GEOID match, else the 2010 tract with most overlap.
     crb_attrs = crb.drop(columns="geometry").set_index("GEOID10")
     exact = boston["GEOID"].isin(crb_attrs.index)
-    boston["crb_join"] = np.where(exact, "exact", "overlap")
+    is_bos = boston["city"] == "Boston"
+    boston["crb_join"] = np.where(exact, "exact", np.where(is_bos, "overlap", "n/a"))
     proj = 26986  # Massachusetts Mainland state plane, metres, for area math
-    ov = gpd.overlay(boston[["GEOID", "geometry"]].to_crs(proj),
+    ov = gpd.overlay(boston.loc[is_bos, ["GEOID", "geometry"]].to_crs(proj),
                      crb[["GEOID10", "geometry"]].to_crs(proj), how="intersection")
     ov["area"] = ov.geometry.area
     best = ov.sort_values("area", ascending=False).drop_duplicates("GEOID").set_index("GEOID")["GEOID10"]
@@ -95,18 +102,21 @@ def main() -> None:
     la = la.drop(columns="GEO_ID").rename(columns={c: f"lace_{c}" for c in la.columns if c != "GEOID"})
     boston = boston.merge(la, on="GEOID", how="left")
 
+    is_bos = boston["city"] == "Boston"  # recomputed: merges above reset the index
     # Cooling-related facilities from the city (points inside each tract)
     for name, f in [("community_centers", "02_community_centers.geojson"),
                     ("pools", "02_community_center_pools.geojson")]:
         p = gpd.read_file(RAW / f).to_crs(4326)
-        joined = gpd.sjoin(p, boston[["GEOID", "geometry"]], predicate="within")
+        bos_only = boston.loc[is_bos, ["GEOID", "geometry"]]
+        joined = gpd.sjoin(p, bos_only, predicate="within")
         # Shoreline sites can fall just outside land-clipped tracts: snap them to a tract within 500 m.
         missed = p.loc[~p.index.isin(joined.index)]
         if len(missed):
-            snap = gpd.sjoin_nearest(missed.to_crs(proj), boston[["GEOID", "geometry"]].to_crs(proj),
-                                     max_distance=500)
+            snap = gpd.sjoin_nearest(missed.to_crs(proj), bos_only.to_crs(proj), max_distance=500)
             joined = pd.concat([joined[["GEOID"]], snap[["GEOID"]]])
-        boston[f"n_{name}"] = boston["GEOID"].map(joined.groupby("GEOID").size()).fillna(0).astype(int)
+        counts = boston["GEOID"].map(joined.groupby("GEOID").size()).fillna(0).astype("Int64")
+        counts[~is_bos] = pd.NA  # the city lists cover Boston only; "not loaded" is not the same as zero
+        boston[f"n_{name}"] = counts
 
     # MBTA stops and stations from the GTFS feed (rapid transit = subway and Green/Mattapan light rail)
     transit = load_stops(RAW / "08_mbta_gtfs.zip")
@@ -118,18 +128,20 @@ def main() -> None:
     boston = boston.sort_values("GEOID").reset_index(drop=True)
     # Guard: no agency "missing value" code may survive into the table
     numeric = boston.drop(columns="geometry").select_dtypes("number")
-    assert not (numeric <= -100).any().any(), "sentinel missing-value code left in table"
+    assert not (numeric <= -100).fillna(False).any().any(), "sentinel missing-value code left in table"
     boston.drop(columns="geometry").to_csv(OUT / "boston_tracts.csv", index=False)
     boston.to_file(OUT / "boston_tracts.geojson", driver="GeoJSON")
 
     # Coverage report
     n = len(boston)
-    print(f"Boston study tracts (2020 geography): {n}")
-    print(f"  CRB join: {int(exact.sum())} exact, {n - int(exact.sum())} by largest overlap")
+    print(f"Study tracts (2020 geography): {n}")
+    for c, g in boston.groupby("city"):
+        print(f"  {c}: {len(g)} tracts, population {g['svi_E_TOTPOP'].sum():,.0f}")
+    print(f"  CRB join (Boston only): {int(exact.sum())} exact, {int((boston['crb_join'] == 'overlap').sum())} by largest overlap")
     for col in ["svi_RPL_THEMES", "places_casthma_pct", "lace_NO_AC_PE", "neighborhood"]:
         print(f"  {col}: {boston[col].notna().sum()}/{n} non-missing")
-    print(f"  community centers placed: {boston['n_community_centers'].sum()}/35, "
-          f"pools placed: {boston['n_pools'].sum()}/18")
+    print(f"  community centers placed: {int(boston['n_community_centers'].sum())}/35, "
+          f"pools placed: {int(boston['n_pools'].sum())}/18")
     print(f"  rapid transit stations: {boston['n_rapid_stations'].sum()}, commuter rail stations: "
           f"{boston['n_commuter_rail_stations'].sum()}, bus stops: {boston['n_bus_stops'].sum()}; "
           f"tracts with no bus stop or station: "

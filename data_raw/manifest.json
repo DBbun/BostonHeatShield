@@ -123,5 +123,13 @@
   "sha256": "d616e62344e5b6b371b23496f8e41bcb99a3e31aadedfa620049d55ee48717fb",
   "downloaded": "2026-10-28T21:20:27",
   "status": "ok"
+ },
+ {
+  "file": "10_tiger2024_ma_cousub.zip",
+  "url": "https://www2.census.gov/geo/tiger/TIGER2024/COUSUB/tl_2024_25_cousub.zip",
+  "bytes": 1971813,
+  "sha256": "a6cab76ec9870292f29cc79ca25f000045f52716b66a66362c2f853b682f272f",
+  "downloaded": "2026-11-02T13:59:02",
+  "status": "ok"
  }
 ]

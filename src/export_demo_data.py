@@ -15,6 +15,7 @@ from pathlib import Path
 
 import geopandas as gpd
 import numpy as np
+import pandas as pd
 
 from gtfs_utils import load_rapid_lines, load_stops
 
@@ -25,6 +26,7 @@ DEMO = Path(sys.argv[3]) if len(sys.argv) > 3 else ROOT / "demo"
 
 PROPS = {
     "GEOID": "id",
+    "city": "city",
     "neighborhood": "hood",
     "svi_E_TOTPOP": "pop",
     "svi_RPL_THEMES": "svi",
@@ -60,7 +62,7 @@ PROPS = {
 
 
 def clean(v):
-    if v is None or (isinstance(v, float) and np.isnan(v)):
+    if v is None or v is pd.NA or (isinstance(v, float) and np.isnan(v)):
         return None
     if isinstance(v, (np.integer,)):
         return int(v)
@@ -82,6 +84,8 @@ def main() -> None:
     for (_, row), geom in zip(t.iterrows(), simple):
         props = {short: clean(row[col]) for col, short in PROPS.items()}
         props["hood_approx"] = bool(row["crb_join"] == "overlap")
+        if props["hood"] is None:  # Cambridge and Somerville have no neighborhood layer: show the city
+            props["hood"] = props["city"]
         g = json.loads(gpd.GeoSeries([geom]).to_json())["features"][0]["geometry"]
         g["coordinates"] = round_coords(g["coordinates"])
         features.append({"type": "Feature", "properties": props, "geometry": g})
