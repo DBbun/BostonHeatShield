@@ -1,0 +1,7 @@
+This is the Decision log. Add one entry for each decision the group makes. Use roles, not names, and leave out private details.
+
+Pick the step from the menu at the top. It starts on the current step. Then fill in the boxes: the trigger and data the group used, the decision itself, the lead and their authority, by role, the supporting partners, an equity check, and any data gap or improvement item. You need at least a decision or a trigger. Press Add entry and it appears in the table below.
+
+The two boxes people skip are the equity check and the data gap. Ask the group out loud: who benefits, who might be missed, and what information did you wish you had?
+
+You can remove an entry with its Delete button. Everything is saved only in this browser, and it goes into the notes file when you export.

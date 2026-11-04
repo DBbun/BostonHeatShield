@@ -16,7 +16,7 @@ Status: planning. Public data only. Everything simulated is labeled as simulated
 
 ## Facilitator board
 
-`board/index.html` is a single-page tool for running a short online heat exercise (timer, risk board, decision log, improvement sorter, role and persona cards). It has no dependencies; open the file in a browser. Notes stay in the browser's local storage on that device. It is a fictional exercise tool, not an official NOAA, NIHHIS or City of Boston product.
+`board/index.html` is a single-page tool for running a short online heat exercise (timer, risk board, decision log, improvement sorter, role and persona cards). It has no dependencies; open the file in a browser. Notes stay in the browser's local storage on that device. Every tab and step has a Listen button with a short voice explanation of what is happening and what to do, plus the words to read instead; sound only plays when you press play. The voice is AI-generated (Kokoro-82M, run locally). To re-render after editing a script in `board/audio/*.txt`, run `scripts/build_board_audio.py` with a Python that has Kokoro installed. It is a fictional exercise tool, not an official NOAA, NIHHIS or City of Boston product.
 
 ## Not in this repository
 
@@ -28,7 +28,7 @@ Code: MIT (see LICENSE). Written exercise materials (for example the role envelo
 
 ## AI disclosure
 
-Developed by DBbun LLC with assistance from Claude Code (Anthropic), model claude-sonnet-5-5 and earlier Claude models used in this project. Update this list as tools change.
+Developed by DBbun LLC with assistance from Claude Code (Anthropic), model claude-sonnet-5-5; board voice narration by Kokoro-82M text-to-speech and earlier Claude models used in this project. Update this list as tools change.
 
 
 

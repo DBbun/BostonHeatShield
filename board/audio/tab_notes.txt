@@ -1,0 +1,7 @@
+This is the Notes and export tab. It is where the session ends.
+
+At the top are the four hotwash questions, each with a box. Type the answers as people speak, by role, not by name. Below is a box for your own facilitator notes.
+
+Under Export and tools, Download notes saves a text file with the timer, the risk board and its snapshots, the decision log, the improvement plan and the hotwash. Copy notes puts the same text on your clipboard. Print prints the page. Large text on or off makes everything bigger.
+
+Everything is stored only in this browser. Download your notes before you close the page. If you used a shared computer, press Clear all data afterward. That cannot be undone, so download first.

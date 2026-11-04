@@ -6,66 +6,92 @@
 <title>HeatShield Facilitator Board</title>
 <meta name="description" content="Facilitator board for the Boston HeatShield online Round 1. Runs in your browser; nothing is sent anywhere.">
 <style>
-:root{--bg:#fff;--ink:#111;--dim:#555;--line:#222;--soft:#e9e9e9;--ok:#1b6b34;--watch:#8a5200;--crit:#a3201a;--focus:#0b57d0}
+:root{--navy:#0b2c5a;--navy2:#123f7a;--blue:#1f5fbf;--sky:#e6eef9;--bg:#f1f5fb;--ink:#14213d;--dim:#53607a;--line:#9fb2cf;--ok:#2f7a3b;--watch:#f4cf2e;--crit:#c62828;--focus:#0b57d0}
 *{box-sizing:border-box}
 html{font-size:16px}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;line-height:1.45}
 body.large{font-size:20px}
 button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer;background:#fff;border:2px solid var(--line);border-radius:8px;padding:.45em .9em}
-button:hover{background:var(--soft)}
-button.pri{background:#111;color:#fff}
-button.pri:hover{background:#333}
+button{cursor:pointer;background:#fff;border:2px solid var(--navy2);color:var(--navy);border-radius:8px;padding:.45em .9em}
+button:hover{background:var(--sky)}
+button.pri{background:var(--navy);color:#fff;border-color:var(--navy)}
+button.pri:hover{background:var(--navy2)}
 button.sm{padding:.25em .6em;font-size:.85em}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 input,select,textarea{border:2px solid var(--line);border-radius:6px;padding:.4em .55em;background:#fff;width:100%}
 textarea{min-height:5.5em;resize:vertical}
-label{display:block;font-weight:700;margin:.6em 0 .2em}
-h1{font-size:1.25rem;margin:0}
-h2{font-size:1.35rem;margin:.2em 0 .5em}
-h3{font-size:1.05rem;margin:1em 0 .3em}
+label{display:block;font-weight:700;margin:.6em 0 .2em;color:var(--navy)}
+h1{font-size:1.3rem;margin:0}
+h2{font-size:1.4rem;margin:.2em 0 .5em;color:var(--navy)}
+h3{font-size:1.05rem;margin:1.1em 0 .3em;color:var(--blue)}
 .wrap{max-width:1200px;margin:0 auto;padding:0 16px 40px}
-.top{position:sticky;top:0;z-index:5;background:#fff;border-bottom:3px solid #111}
+.banner{background:#08193a;color:#fff;font-size:.85rem;text-align:center;padding:6px 12px}
+.top{position:sticky;top:0;z-index:5;background:linear-gradient(90deg,var(--navy),var(--navy2));color:#fff}
+.scale{height:7px;background:linear-gradient(90deg,#4f9a4f 0 20%,#f1cf2c 20% 40%,#f0a45d 40% 60%,#d9534f 60% 80%,#e8a0d8 80%)}
 .topin{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between}
-.brand small{display:block;color:var(--dim);font-size:.8rem}
-.clock{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.brand small{display:block;color:#bcd3f5;font-size:.8rem}
+.clock{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:rgba(255,255,255,.1);border-radius:12px;padding:6px 12px}
 .blk{font-weight:700}
-.big{font-size:1.9rem;font-weight:700;font-variant-numeric:tabular-nums;min-width:5.2em;text-align:center}
-.big.over{color:var(--crit)}
-.tot{color:var(--dim);font-variant-numeric:tabular-nums}
-.banner{background:#111;color:#fff;font-size:.85rem;text-align:center;padding:6px 12px}
+.big{font-size:1.9rem;font-weight:700;font-variant-numeric:tabular-nums;min-width:4.2em;text-align:center}
+.big.over{color:#ffb3ad}
+.tot{color:#bcd3f5;font-variant-numeric:tabular-nums}
+@media(max-width:700px){.top{position:static}}
+.top button{background:transparent;color:#fff;border-color:#fff}
+.top button:hover{background:rgba(255,255,255,.18)}
+.top button.pri{background:var(--watch);color:#111;border-color:var(--watch)}
 nav{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
-nav button{border-radius:8px 8px 0 0}
-nav button[aria-selected=true]{background:#111;color:#fff}
-.cols{display:grid;grid-template-columns:280px 1fr;gap:20px}
+nav button{border-radius:8px 8px 0 0;font-weight:700}
+nav button[aria-selected=true]{background:var(--navy);color:#fff;box-shadow:inset 0 -5px 0 var(--watch)}
+.cols{display:grid;grid-template-columns:290px 1fr;gap:20px}
 @media(max-width:820px){.cols{grid-template-columns:1fr}}
 .steps{display:flex;flex-direction:column;gap:6px}
-.steps button{text-align:left;display:flex;gap:8px;justify-content:space-between;align-items:baseline}
-.steps button[aria-current=step]{background:#111;color:#fff}
+.steps button{text-align:left;display:flex;gap:8px;justify-content:space-between;align-items:baseline;border-color:var(--line);color:var(--ink)}
+.steps button[aria-current=step]{background:var(--navy);color:#fff;border-color:var(--navy)}
 .steps .m{font-size:.8em;opacity:.8;white-space:nowrap}
-.card{border:2px solid var(--line);border-radius:10px;padding:14px 16px;margin:0 0 14px}
-.read{border-left:6px solid #111;background:#f4f4f4;padding:10px 14px;margin:8px 0;font-style:italic}
-.tag{display:inline-block;border:2px solid var(--line);border-radius:999px;padding:.05em .7em;font-size:.85em;font-weight:700;margin-right:6px}
+.card{background:#fff;border:1px solid var(--line);border-left:6px solid var(--blue);border-radius:10px;padding:14px 16px;margin:0 0 14px}
+.keybar{background:linear-gradient(90deg,var(--navy),var(--navy2));color:#fff;border-radius:10px 10px 0 0;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.kb-title{font-size:1.3rem;font-weight:700}
+.kb-sub{color:#fff;border:2px solid #fff;border-radius:999px;padding:.1em .85em;font-weight:700;font-size:.85rem;white-space:nowrap}
+.stepbody{background:#fff;border:1px solid var(--line);border-top:0;border-radius:0 0 10px 10px;padding:6px 16px 16px}
+.read{background:#1f4e9d;color:#fff;border:3px solid var(--navy);border-radius:10px;padding:12px 16px;margin:12px 0;font-size:1.05em}
+.rl{font-size:.75rem;letter-spacing:.1em;font-weight:700;color:#cfe0ff;margin-bottom:4px}
 ul{margin:.3em 0 .6em 1.2em;padding:0}
-li{margin:.15em 0}
-table{border-collapse:collapse;width:100%}
-th,td{border:2px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
-th{background:#fff}
+li{margin:.2em 0}
+li::marker{color:var(--blue)}
+table{border-collapse:collapse;width:100%;background:#fff}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--sky);color:var(--navy)}
 td.cellbtn{padding:4px}
 td.cellbtn button{width:100%;min-height:2.6em;font-weight:700}
-.s1{border-color:var(--ok);color:var(--ok)}
-.s2{border-color:var(--watch);color:var(--watch);border-style:dashed}
-.s3{border-color:var(--crit);color:#fff;background:var(--crit)}
+.s0{background:#fff;color:var(--dim);border-color:var(--line)}
+.s1{background:var(--ok);color:#fff;border-color:var(--ok)}
+.s2{background:var(--watch);color:#111;border-color:#c9a800}
+.s3{background:var(--crit);color:#fff;border-color:var(--crit)}
+td.cellbtn button.s1:hover{background:#25632f}
+td.cellbtn button.s2:hover{background:#e6c01c}
+td.cellbtn button.s3:hover{background:#a81f1f}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:8px 0 10px;font-size:.9rem;font-weight:700}
+.sw{display:inline-block;width:16px;height:16px;border-radius:4px;border:2px solid;margin-right:6px;vertical-align:-3px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:700px){.row2{grid-template-columns:1fr}}
 .muted{color:var(--dim)}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
 .empty{color:var(--dim);font-style:italic}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:.2s}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:.2s}
 .toast.on{opacity:1}
-.bigcard{border:4px solid #111;border-radius:12px;padding:20px 24px;margin:0 0 16px;font-size:1.3em}
-footer{margin-top:30px;border-top:2px solid #111;padding-top:12px;color:var(--dim);font-size:.85rem}
-@media print{.top,nav,.actions,.banner button,.noprint{display:none!important}.card{break-inside:avoid}body{font-size:11pt}}
+.bigcard{background:#1f4e9d;color:#fff;border:4px solid var(--navy);border-radius:12px;padding:20px 24px;margin:0 0 16px;font-size:1.3em}
+.bigcard button{background:#fff}
+.listen{margin:10px 0 12px}
+.lbtn{display:inline-flex;gap:8px;align-items:center;background:#fff;border:2px solid var(--blue);color:var(--blue);font-weight:700;border-radius:999px;padding:.4em 1.05em}
+.lbtn[aria-expanded=true]{background:var(--blue);color:#fff}
+.lbox{background:#fff;border:2px solid var(--blue);border-radius:10px;padding:10px 12px;margin-top:8px}
+.lbox[hidden]{display:none}
+.lbox audio{width:100%}
+.lbox .note{font-size:.8rem;color:var(--dim);margin:6px 0 0}
+.lbox summary{cursor:pointer;font-weight:700;color:var(--navy2);margin-top:8px}
+.lbox .words{white-space:pre-line;margin-top:6px}
+footer{margin-top:30px;border-top:4px solid var(--navy);padding-top:12px;color:var(--dim);font-size:.85rem}
+@media print{.top,.scale,.banner,nav,.actions,.listen,.noprint{display:none!important}body{background:#fff;font-size:11pt}.card,.stepbody{break-inside:avoid}.keybar,.read,.bigcard{background:#fff!important;color:#000!important;border:2px solid #000}.rl,.kb-sub{color:#000!important;border-color:#000}.s1,.s2,.s3{background:#fff!important;color:#000!important;border:2px solid #000}}
 </style>
 </head>
 <body>
@@ -81,17 +107,20 @@ footer{margin-top:30px;border-top:2px solid #111;padding-top:12px;color:var(--di
     <button id="nextBlk" class="sm" title="Next block">Block &#9654;</button>
   </div>
 </div></header>
+<div class="scale" aria-hidden="true"></div>
 <main class="wrap">
+  <div id="intro"></div>
   <nav role="tablist" id="tabs" aria-label="Sections"></nav>
   <section id="panel" role="tabpanel" tabindex="-1"></section>
   <footer>
     Adapted from the Boston HeatShield Situation Manual by DBbun LLC (Cambridge, Massachusetts), submitted June 30, 2026 to the NIHHIS Heat Tabletop Exercise Design Challenge. The scenario, injects and numbers are simulated for exercise play.
-    No payment, prizes or other rewards are offered for taking part. Drafted with Claude Code (model claude-sonnet-5-5).
+    No payment, prizes or other rewards are offered for taking part. Drafted with Claude Code (model claude-sonnet-5-5). The voice narration is AI-generated (Kokoro-82M text-to-speech) and runs only when you press play.
     <a href="https://github.com/DBbun/BostonHeatShield">Source on GitHub</a>.
   </footer>
 </main>
 <div class="toast" id="toast" role="status"></div>
 
+<script src="audio/narration.js"></script>
 <script>
 (() => {
 'use strict';
@@ -236,6 +265,24 @@ setInterval(() => {
 }, 250);
 addEventListener('beforeunload', save);
 
+/* ---------- listen (voice narration) ---------- */
+const NARR = window.NARR || {};
+const KC = { 'Welcome': '#5b6f95', 'Module 1': '#2f7a3b', 'Module 2': '#b85a00', 'Module 3': '#1f5fbf', 'Close': '#6b3fa0' };
+function listen(id, label) {
+  const box = h('div', { class: 'lbox', hidden: true });
+  const btn = h('button', { class: 'lbtn', 'aria-expanded': 'false', onclick: () => {
+    const open = box.hidden; box.hidden = !open; btn.setAttribute('aria-expanded', String(open));
+    if (open && !box.firstChild) {
+      box.append(h('audio', { controls: true, preload: 'none', src: 'audio/' + id + '.mp3' }),
+        h('p', { class: 'note' }, 'AI-generated voice (Kokoro-82M). It plays only when you press play.'));
+      if (NARR[id]) box.append(h('details', {}, h('summary', {}, 'Read the words instead'), h('div', { class: 'words' }, NARR[id])));
+    }
+    if (!open) { const a = box.querySelector('audio'); if (a) a.pause(); }
+  } }, '\uD83C\uDFA7 ' + label);
+  return h('div', { class: 'listen' }, btn, box);
+}
+document.addEventListener('play', e => { document.querySelectorAll('audio').forEach(a => { if (a !== e.target) a.pause(); }); }, true);
+
 /* ---------- tabs ---------- */
 const TABS = [['run', 'Run the session'], ['risk', 'Risk board'], ['log', 'Decision log'], ['improv', 'Improvements'], ['cards', 'Cards'], ['notes', 'Notes and export']];
 function paintTabs() {
@@ -251,18 +298,19 @@ function render() {
 function viewRun(p) {
   const cur = STEPS[S.step], list = h('div', { class: 'steps', role: 'list' });
   STEPS.forEach((s, i) => list.append(h('button', {
-    'aria-current': i === S.step ? 'step' : false,
+    'aria-current': i === S.step ? 'step' : false, style: 'border-left:8px solid ' + (KC[s.kind] || '#123f7a'),
     onclick: () => { S.step = i; S.block = s.block; save(); paintClock(); render(); } },
     h('span', {}, (S.done[s.id] ? '✓ ' : '') + s.title), h('span', { class: 'm' }, s.mins + ' min'))));
-  const d = h('div', {});
-  d.append(h('div', {}, h('span', { class: 'tag' }, cur.kind), h('span', { class: 'tag' }, cur.mins + ' min')));
-  d.append(h('h2', {}, cur.title));
+  const d = h('div', { class: 'stepbody' });
+  const head = h('div', { class: 'keybar' }, h('div', { class: 'kb-title' }, cur.title),
+    h('div', { class: 'kb-sub', style: 'background:' + (KC[cur.kind] || '#123f7a') }, cur.kind + ' \u00b7 ' + cur.mins + ' min'));
+  d.append(listen('s_' + cur.id.replace('.', '_'), "Listen: what's happening and what to do"));
   if (cur.envelope) {
     const e = ENVELOPES.find(x => x.id === cur.envelope), e2 = cur.envelope2 && ENVELOPES.find(x => x.id === cur.envelope2);
     d.append(h('div', { class: 'card' }, h('strong', {}, 'Send now: '), `Envelope ${e.id} (${e.role})` + (e2 ? ` and Envelope ${e2.id} (${e2.role}), if someone holds that role` : ''),
       h('div', { class: 'actions' }, h('button', { class: 'sm', onclick: () => { S.tab = 'cards'; save(); paintTabs(); render(); } }, 'Open the envelope cards'))));
   }
-  if (cur.read) d.append(h('h3', {}, 'Read aloud'), h('div', { class: 'read' }, cur.read));
+  if (cur.read) d.append(h('div', { class: 'read' }, h('div', { class: 'rl' }, 'READ ALOUD'), cur.read));
   if (cur.extra) d.append(h('div', { class: 'card' }, cur.extra));
   if (cur.list) d.append(h('h3', {}, cur.list[0]), h('ul', {}, cur.list[1].map(x => h('li', {}, x))));
   if (cur.questions) d.append(h('h3', {}, 'Decision-forcing questions'), h('ul', {}, cur.questions.map(x => h('li', {}, x))));
@@ -273,7 +321,7 @@ function viewRun(p) {
     h('button', { onclick: () => { S.step = Math.max(0, S.step - 1); S.block = STEPS[S.step].block; save(); paintClock(); render(); } }, '◀ Previous'),
     h('button', { class: 'pri', onclick: () => { S.done[cur.id] = true; S.step = Math.min(STEPS.length - 1, S.step + 1); S.block = STEPS[S.step].block; save(); paintClock(); render(); } }, 'Mark done and go to next ▶'),
     h('button', { onclick: () => { S.tab = 'log'; save(); paintTabs(); render(); } }, 'Log a decision')));
-  p.append(h('div', { class: 'cols' }, h('div', {}, h('h3', { style: 'margin-top:0' }, 'Steps'), list), d));
+  p.append(listen('tab_run', 'Listen: how this screen works'), h('div', { class: 'cols' }, h('div', {}, h('h3', { style: 'margin-top:0' }, 'Steps'), list), h('div', {}, head, d)));
 }
 
 /* ---------- Risk board ---------- */
@@ -290,8 +338,9 @@ function riskTable(grid, editable) {
   t.append(tb); return h('div', { style: 'overflow-x:auto' }, t);
 }
 function viewRisk(p) {
-  p.append(h('h2', {}, 'Neighborhood risk board'),
+  p.append(h('h2', {}, 'Neighborhood risk board'), listen('tab_risk', 'Listen: how the risk board works'),
     h('p', { class: 'muted' }, 'Click a cell to cycle: — (not set), OK, Watch, Critical. These are exercise values, not an official map. Save a snapshot after Module 1, after Inject 2.2, and after Module 3.'),
+    h('div', { class: 'legend' }, ['Not set', 'OK', 'Watch', 'Critical'].map((l, i) => h('span', {}, h('i', { class: 'sw s' + i }), l))),
     riskTable(S.risk, true));
   const sel = h('select', { id: 'snapSel', 'aria-label': 'View a saved snapshot' }, h('option', { value: '' }, 'Choose a snapshot to view'), SNAPS.filter(([k]) => S.snaps[k]).map(([k, l]) => h('option', { value: k }, l + ' (saved ' + new Date(S.snaps[k].at).toLocaleTimeString() + ')')));
   const view = h('div', {});
@@ -303,7 +352,7 @@ function viewRisk(p) {
 function viewLog(p) {
   const f = {}; const fld = (key, label, area) => { const el = area ? h('textarea', { id: 'f_' + key }) : h('input', { id: 'f_' + key, type: 'text' }); f[key] = el; return h('div', {}, h('label', { for: 'f_' + key }, label), el); };
   const stepSel = h('select', { id: 'f_step' }, STEPS.map(s => h('option', { value: s.id }, s.title))); stepSel.value = STEPS[S.step].id;
-  p.append(h('h2', {}, 'Decision log'), h('p', { class: 'muted' }, 'One entry per decision. Use roles, not names. Leave out private details.'));
+  p.append(h('h2', {}, 'Decision log'), listen('tab_log', 'Listen: how the decision log works'), h('p', { class: 'muted' }, 'One entry per decision. Use roles, not names. Leave out private details.'));
   p.append(h('div', { class: 'card' },
     h('div', {}, h('label', { for: 'f_step' }, 'Inject or step'), stepSel),
     h('div', { class: 'row2' }, fld('trigger', 'Trigger and data used', true), fld('decision', 'Decision', true)),
@@ -326,7 +375,7 @@ function viewLog(p) {
 function viewImprov(p) {
   const cat = h('select', { id: 'i_cat' }, CATS.map(c => h('option', {}, c)));
   const act = h('textarea', { id: 'i_act' }), own = h('input', { id: 'i_own', type: 'text' }), eq = h('textarea', { id: 'i_eq' });
-  p.append(h('h2', {}, 'Improvement plan'), h('p', { class: 'muted' }, 'Every gap becomes an item: an immediate fix, a 30, 60 or 90-day action, or a long-term investment. Use roles for owners.'));
+  p.append(h('h2', {}, 'Improvement plan'), listen('tab_improv', 'Listen: how the improvement plan works'), h('p', { class: 'muted' }, 'Every gap becomes an item: an immediate fix, a 30, 60 or 90-day action, or a long-term investment. Use roles for owners.'));
   p.append(h('div', { class: 'card' },
     h('div', { class: 'row2' }, h('div', {}, h('label', { for: 'i_cat' }, 'Timeframe'), cat), h('div', {}, h('label', { for: 'i_own' }, 'Owner (role)'), own)),
     h('div', { class: 'row2' }, h('div', {}, h('label', { for: 'i_act' }, 'Action'), act), h('div', {}, h('label', { for: 'i_eq' }, 'Equity impact and dependencies'), eq)),
@@ -346,7 +395,7 @@ function viewImprov(p) {
 function viewCards(p) {
   const big = h('div', {});
   const show = (title, text) => { big.replaceChildren(h('div', { class: 'bigcard' }, h('strong', {}, title), h('div', {}, text), h('div', { class: 'actions' }, h('button', { class: 'sm', onclick: () => big.replaceChildren() }, 'Hide')))); big.scrollIntoView({ block: 'nearest' }); };
-  p.append(h('h2', {}, 'Role envelopes'), h('p', { class: 'muted' }, 'Copy the text and send it as a private message or email at the inject named. Fictional exercise content.'), big);
+  p.append(h('h2', {}, 'Role envelopes'), listen('tab_cards', 'Listen: how the cards work'), h('p', { class: 'muted' }, 'Copy the text and send it as a private message or email at the inject named. Fictional exercise content.'), big);
   ENVELOPES.forEach(e => p.append(h('div', { class: 'card' },
     h('h3', { style: 'margin-top:0' }, `Envelope ${e.id}: ${e.role}`), h('p', { class: 'muted' }, e.share + '. Decision forced: ' + e.forces), h('p', {}, e.text),
     h('div', { class: 'actions' },
@@ -376,7 +425,7 @@ function exportText() {
   return L.join('\n');
 }
 function viewNotes(p) {
-  p.append(h('h2', {}, 'Hotwash and notes'), h('p', { class: 'muted' }, 'Roles, not names. Leave out private health details. This text is saved only in this browser.'));
+  p.append(h('h2', {}, 'Hotwash and notes'), listen('tab_notes', 'Listen: how to finish and export'), h('p', { class: 'muted' }, 'Roles, not names. Leave out private health details. This text is saved only in this browser.'));
   HOT.forEach((q, i) => { const ta = h('textarea', { id: 'hot' + i }); ta.value = S.hot[i] || ''; ta.oninput = () => { S.hot[i] = ta.value; save(); }; p.append(h('label', { for: 'hot' + i }, q), ta); });
   const n = h('textarea', { id: 'notes', style: 'min-height:8em' }); n.value = S.notes; n.oninput = () => { S.notes = n.value; save(); };
   p.append(h('label', { for: 'notes' }, 'Facilitator notes'), n);
@@ -392,6 +441,7 @@ function viewNotes(p) {
 }
 
 document.body.classList.toggle('large', !!S.large);
+$('intro').append(listen('start', 'Listen: how this board works'));
 paintClock(); paintTabs(); render();
 })();
 </script>

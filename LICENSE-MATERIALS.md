@@ -13,6 +13,7 @@ https://creativecommons.org/licenses/by/4.0/
 - docs/HeatShield_Round1_SignUp_Form.docx
 - The role envelopes, persona cards, rules text and worksheets inside the
   facilitator board (board/index.html). The board's code is MIT (see LICENSE).
+- The narration scripts and voice recordings in board/audio/ (AI-generated voice, Kokoro-82M).
 - Any replication guide added later under docs/.
 
 ## What this does not cover

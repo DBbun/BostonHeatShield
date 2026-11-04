@@ -1,0 +1,9 @@
+This is the HeatShield Facilitator Board. It helps one person run a sixty-minute online heat exercise. It is a fictional exercise with simulated numbers. It is not an official NOAA, NIHHIS or City of Boston product, and nothing you type leaves this device.
+
+At the top is the clock. It shows the time left in the current part of the session. Press Start when the session begins, and use the two Block buttons to move between parts. If you run over, the clock turns red and shows a plus sign, so you can see how far behind you are.
+
+Below the clock are six tabs. Run the session shows each step, what to read aloud, and what to ask. Risk board is a grid the group fills in together. Decision log is where you write down each decision, who owns it, and what triggered it. Improvements collects the gaps the group found, sorted by when they can be fixed. Cards holds the role envelopes and the persona cards. Notes and export is where you record the closing discussion and download everything as a text file.
+
+Every tab and every step has a Listen button like this one, which explains what is happening and what to do. Sound never plays by itself, and you can read the words instead.
+
+Before you begin, check that captions are on and recording is off. Write down roles, not names. And download the notes file before you close the page, because the board keeps everything only in this browser.
