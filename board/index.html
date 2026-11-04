@@ -287,7 +287,7 @@ function riskTable(grid, editable) {
       onclick: ev => { S.risk[r][k] = (S.risk[r][k] + 1) % 4; save(); const b = ev.currentTarget; b.className = 's' + S.risk[r][k]; b.textContent = STATUS[S.risk[r][k]];
         b.setAttribute('aria-label', `${n}, ${c}: ${STATUS[S.risk[r][k]]}. Click to change.`); } }, STATUS[v]));
   }))));
-  t.append(tb); return t;
+  t.append(tb); return h('div', { style: 'overflow-x:auto' }, t);
 }
 function viewRisk(p) {
   p.append(h('h2', {}, 'Neighborhood risk board'),
