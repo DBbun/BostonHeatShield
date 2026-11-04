@@ -1,7 +1,3 @@
-Inject two point two, utility grid stress. Six minutes. The utility reports sustained cooling demand, local power problems in two neighborhoods, and restoration times that are uncertain.
+Inject two point two, utility grid stress. Six minutes. The utility reports sustained cooling demand and local power problems in two neighborhoods, with uncertain restoration times. Send Envelope two to the utility liaison, and Envelope four to the housing or property manager if someone holds that role. Then read the blue card.
 
-Send Envelope two to the utility liaison. If someone holds the housing or property manager role, send Envelope four too. Then read the text in the blue box.
-
-Ask how utility information reaches emergency management, cooling sites and community groups, and what the protocol is for people on powered medical devices. Listen for the gap between what the utility knows and what everyone else hears, and for the messaging worry: how to inform people without causing panic or sounding like a promise.
-
-Update the risk board, especially cooling access and power. When the inject ends, go to the Risk board tab and press Save: After Inject 2.2.
+Ask how utility information reaches emergency management, cooling sites and community groups, and what the protocol is for people on powered medical devices. Update the Risk board, especially cooling and power, and save the snapshot After Inject 2.2.

@@ -1,9 +1,5 @@
-This is the welcome step. Five minutes. Your job is to set a calm, low-pressure tone and make sure everyone knows how the hour works.
+Welcome. Five minutes. Set a calm, low-pressure tone. First check that captions are on, recording is off, and everyone knows their role. If a role is empty, read that envelope aloud yourself. Press play on the clock.
 
-First, check three things: captions are on, recording is off, and everyone knows which role they hold. If a role is empty, read that role's envelope aloud yourself, from the Cards tab. Press Start on the clock when you begin.
+Then read the blue card. It says three things: this is free and voluntary, it is fictional with simulated numbers, and it is not an official NOAA, NIHHIS or City of Boston project. Open Rules under More and go through them slowly. Two matter most: nobody is graded, and nobody shares private health details.
 
-Then read the welcome text in the blue box. It says three important things. This is a free, voluntary exercise. It is fictional, with simulated numbers. And it is not an official NOAA, NIHHIS or City of Boston project. Say that you write down decisions by role, not by name, and that you are not recording.
-
-Go through the ground rules slowly. The two that matter most are that nobody is graded, and that nobody should share private health details.
-
-Last, give the scenario in one minute: a simulated heat wave hits Boston from Thursday to Monday, with power stress by day four. Then ask for questions, and move on.
+Then give the scenario in one minute, using Scenario details: a simulated heat wave hits Boston from Thursday to Monday, with power stress by day four. Take questions, then press Done and Next.

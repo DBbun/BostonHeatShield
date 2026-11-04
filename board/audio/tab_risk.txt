@@ -1,7 +1,5 @@
-This is the risk board. It is a grid with five neighborhoods and systems down the side, and five kinds of risk across the top: daytime heat, overnight recovery, cooling access and power, E M S and language need, and outreach status.
+This is the Risk board. Five neighborhoods and systems run down the side. Five kinds of risk run across the top: daytime heat, overnight recovery, cooling and power, E M S and language need, and outreach.
 
-Tap a cell to change it. It cycles through four settings: a dash, which means not set yet, then OK in green, Watch in yellow, and Critical in red. Ask the group to call each cell out loud, and fill it in as they agree. Disagreement is useful. Note it in the decision log.
+Tap a circle to change it. It cycles through empty, green for okay, yellow for watch, and red for critical. Ask the group to call each one out loud. Disagreement is useful, so note it in the log.
 
-Save a snapshot three times: after Module 1, after Inject 2.2, and after Module 3. A snapshot freezes the grid so you can compare how the picture changed. Use the menu below the buttons to view a saved one.
-
-These cells are exercise values. They are not an official map and not a prediction for any real neighborhood. On a small phone screen, the grid scrolls sideways.
+Save a snapshot after Module 1, after Inject 2.2, and after Module 3. Then use the tabs at the top to compare them. These are exercise values, not an official map.

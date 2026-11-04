@@ -2,99 +2,117 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
 <title>Boston HeatShield Map</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
-  :root { --bg:#fff; --fg:#1a1a1a; --muted:#555; --panel:#fff; --line:#d0d0d0; --accent:#1a1a1a; }
+  :root { --card:#fff; --ink:#1d1d1f; --dim:#6e6e73; --line:#e3e3e8; --fill:#efeff4; --acc:#0071e3; --acc-t:#e8f1fd; --ok:#248a3d;
+          --blur:rgba(255,255,255,.82); --sh:0 2px 16px rgba(0,0,0,.18); }
   @media (prefers-color-scheme: dark) {
-    :root { --bg:#161616; --fg:#eee; --muted:#aaa; --panel:#222; --line:#444; --accent:#eee; }
+    :root { --card:#1c1c1e; --ink:#f5f5f7; --dim:#a1a1a6; --line:#2c2c2e; --fill:#2c2c2e; --acc:#0a84ff; --acc-t:#0a2a4a; --ok:#30d158;
+            --blur:rgba(28,28,30,.82); }
   }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html, body { height:100%; margin:0; }
-  body { font-family: Arial, Helvetica, sans-serif; background:var(--bg); color:var(--fg);
-         display:flex; flex-direction:column; }
-  header { padding:10px 16px; border-bottom:1px solid var(--line); }
-  header h1 { font-size:18px; margin:0 0 2px; }
-  header p { margin:0; font-size:13px; color:var(--muted); }
-  .bar { display:flex; flex-wrap:wrap; gap:12px 20px; align-items:center; padding:8px 16px;
-         border-bottom:1px solid var(--line); font-size:14px; }
-  .bar label { display:flex; gap:6px; align-items:center; }
-  select { font:inherit; padding:4px 6px; background:var(--panel); color:var(--fg);
-           border:1px solid var(--line); border-radius:4px; max-width:100%; }
-  #map { flex:1; min-height:320px; }
-  footer { padding:8px 16px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); }
-  footer p { margin:2px 0; }
-  .legend { background:var(--panel); color:var(--fg); padding:8px 10px; border:1px solid var(--line);
-            border-radius:4px; font-size:12px; line-height:1.5; max-width:230px; }
-  .legend b { display:block; margin-bottom:4px; }
-  .legend i { display:inline-block; width:14px; height:14px; margin-right:6px; vertical-align:-2px;
-              border:1px solid #888; }
-  .pop h3 { margin:0 0 2px; font-size:14px; }
-  .pop .sub { color:#666; font-size:12px; margin-bottom:6px; }
-  .pop table { border-collapse:collapse; font-size:12px; }
-  .pop td { padding:2px 8px 2px 0; vertical-align:top; }
+  body { font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; color:var(--ink); background:var(--fill); line-height:1.4; -webkit-font-smoothing:antialiased; }
+  button, select { font:inherit; color:inherit; }
+  button { cursor:pointer; }
+  :focus-visible { outline:3px solid var(--acc); outline-offset:2px; }
+  #map { position:fixed; inset:0; }
+  .hud { position:fixed; z-index:1100; top:max(10px,env(safe-area-inset-top)); left:10px; right:10px; max-width:480px; padding:12px;
+         background:var(--blur); -webkit-backdrop-filter:saturate(180%) blur(20px); backdrop-filter:saturate(180%) blur(20px);
+         border-radius:20px; box-shadow:var(--sh); }
+  .hud h1 { font-size:1.15rem; margin:0; letter-spacing:-.01em; }
+  .hud p { margin:0 0 8px; font-size:.78rem; color:var(--dim); }
+  .hud select { width:100%; border:0; border-radius:12px; background:var(--fill); padding:11px 12px; font-size:1rem; margin-bottom:8px; }
+  .pills { display:flex; gap:8px; }
+  .pill { flex:1; min-height:42px; border:0; border-radius:12px; background:var(--fill); color:var(--acc); font-weight:600; }
+  .pill.pri { background:var(--acc); color:#fff; }
+  .legend { background:var(--blur); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px); color:var(--ink); padding:8px 10px 6px; border-radius:14px; box-shadow:var(--sh); font-size:.72rem; width:190px; }
+  .legend b { display:block; font-size:.74rem; margin-bottom:5px; line-height:1.2; }
+  .legend .bar { display:flex; height:10px; border-radius:5px; overflow:hidden; }
+  .legend .bar i { flex:1; }
+  .legend .lab { display:flex; justify-content:space-between; color:var(--dim); margin-top:3px; }
+  .legend .nd { color:var(--dim); margin-top:3px; display:flex; align-items:center; gap:5px; }
+  .legend .nd i { width:10px; height:10px; border-radius:3px; background:#cfcfcf; display:inline-block; }
+  .leaflet-popup-content-wrapper { border-radius:16px; background:var(--card); color:var(--ink); box-shadow:var(--sh); }
+  .leaflet-popup-tip { background:var(--card); }
+  .leaflet-popup-content { margin:14px 16px; }
+  .pop h3 { margin:0; font-size:1.05rem; letter-spacing:-.01em; }
+  .pop .sub { color:var(--dim); font-size:.78rem; margin-bottom:8px; }
+  .pop .k { font-size:.72rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--dim); }
+  .pop .big { font-size:1.25rem; font-weight:700; letter-spacing:-.02em; line-height:1.15; margin:2px 0 8px; }
+  .pop details { border-top:1px solid var(--line); padding-top:6px; }
+  .pop summary { cursor:pointer; color:var(--acc); font-weight:600; font-size:.9rem; min-height:32px; display:flex; align-items:center; }
+  .pop table { border-collapse:collapse; font-size:.8rem; width:100%; }
+  .pop td { padding:3px 8px 3px 0; vertical-align:top; }
   .pop td.v { text-align:right; white-space:nowrap; }
-  .pop .src { color:#666; font-size:11px; margin-top:6px; }
-  .join { padding:10px 16px; border-bottom:1px solid var(--line); font-size:14px; }
-  .join a.btn { display:inline-block; margin-left:8px; padding:5px 12px; border:1px solid var(--fg);
-                border-radius:4px; color:var(--fg); text-decoration:none; font-weight:bold; }
-  .join small { display:block; color:var(--muted); margin-top:4px; font-size:12px; }
-  @media (max-width:600px) { header h1 { font-size:16px; } .bar { gap:8px 14px; } }
+  .pop .src { color:var(--dim); font-size:.72rem; margin-top:6px; }
+  dialog { border:0; padding:0; background:var(--card); color:var(--ink); width:min(560px,100%); max-height:88vh; margin:auto auto 0; border-radius:22px 22px 0 0; box-shadow:0 -4px 40px rgba(0,0,0,.3); }
+  @media (min-width:640px) { dialog { margin:auto; border-radius:22px; } }
+  dialog::backdrop { background:rgba(0,0,0,.4); }
+  .sin { padding:10px 20px calc(20px + env(safe-area-inset-bottom)); }
+  .grab { width:40px; height:5px; border-radius:3px; background:var(--line); margin:0 auto 12px; }
+  .sin h2 { font-size:1.5rem; margin:.2em 0 .4em; letter-spacing:-.01em; }
+  .sin p { margin:.5em 0; }
+  .sin .fine { font-size:.82rem; color:var(--dim); }
+  .sin a { color:var(--acc); }
+  .btn { display:flex; align-items:center; justify-content:center; width:100%; min-height:48px; border:0; border-radius:14px; background:var(--fill); color:var(--acc); font-weight:600; text-decoration:none; margin-top:12px; }
+  .btn.pri { background:var(--acc); color:#fff; }
+  .list { background:var(--fill); border-radius:16px; overflow:hidden; margin:10px 0; }
+  .list > * + * { border-top:1px solid var(--line); }
+  .row { display:flex; align-items:center; gap:12px; min-height:52px; padding:8px 16px; }
+  .row span { flex:1; }
+  .sw { width:51px; height:31px; border-radius:999px; border:0; background:var(--line); position:relative; flex:none; transition:background .2s; }
+  .sw::after { content:""; position:absolute; top:2px; left:2px; width:27px; height:27px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.3); transition:transform .2s; }
+  .sw[aria-checked=true] { background:var(--ok); }
+  .sw[aria-checked=true]::after { transform:translateX(20px); }
+  details.disc > summary { list-style:none; display:flex; align-items:center; min-height:52px; padding:8px 16px; cursor:pointer; font-weight:600; }
+  details.disc > summary::-webkit-details-marker { display:none; }
+  details.disc > summary::after { content:"›"; margin-left:auto; color:var(--dim); font-size:1.4rem; transition:transform .2s; }
+  details.disc[open] > summary::after { transform:rotate(90deg); }
+  details.disc > div { padding:0 16px 14px; font-size:.88rem; }
+  details.disc p { margin:.4em 0; }
+  @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
 </style>
 </head>
 <body>
-<header>
-  <h1>Boston HeatShield: heat and vulnerability map of Boston, Cambridge and Somerville</h1>
-  <p>Planning demo. Public data only. Not a forecast, not real-time, and not an official city or NOAA tool.</p>
-</header>
-<div class="join">
-  Boston HeatShield won NOAA's 2026 Heat Tabletop Design Challenge and is being built into a largely online exercise.
-  Want to take part, as a resident, an agency, an organization or an observer?
-  <a class="btn" href="mailto:uri.kartoun@dbbun.com?subject=Boston%20HeatShield%3A%20I%20want%20to%20take%20part&body=Name%3A%0D%0AHow%20I%20would%20take%20part%20(resident%2C%20agency%2C%20organization%2C%20observer)%3A%0D%0AOrganization%20(optional)%3A%0D%0ANeighborhood%20(optional)%3A%0D%0A">Sign up by email</a>
-  <small>The exercise is in early planning and no dates are set. I will use your details only to contact you about it.
-  This is an independent DBbun project; no city agency or NOAA office is running it.</small>
+<div id="map" role="application" aria-label="Map of Boston, Cambridge and Somerville census tracts"></div>
+
+<div class="hud">
+  <h1>HeatShield Map</h1>
+  <p>Boston, Cambridge and Somerville · planning demo · public data · not a forecast</p>
+  <select id="measure" aria-label="Shade tracts by"></select>
+  <div class="pills">
+    <button class="pill" id="layersBtn">Layers</button>
+    <button class="pill" id="aboutBtn">About the data</button>
+    <button class="pill pri" id="joinBtn">Take part</button>
+  </div>
 </div>
-<div class="bar">
-  <label>Shade tracts by
-    <select id="measure"></select>
-  </label>
-  <label><input type="checkbox" id="fac" checked> Community centers and pools</label>
-  <label><input type="checkbox" id="transit" checked> MBTA subway, light rail and stations</label>
-  <label><input type="checkbox" id="focus" checked> Outline scenario neighborhoods</label>
-</div>
-<div id="map" role="application" aria-label="Map of Boston census tracts"></div>
-<footer>
-  <p>Sources: Census Bureau LACE 2023 (experimental estimates of homes without air conditioning, with margins of error);
-     CDC/ATSDR Social Vulnerability Index 2022 (American Community Survey estimates);
-     CDC PLACES (model-based small-area estimates from health surveys); City of Boston community centers and pools (Boston only so far; Cambridge and Somerville facilities are not loaded yet); MBTA GTFS schedule feed (Fall 2026 edition, scheduled routes only, no service alerts);
-     Census TIGER 2024 tract and city boundaries; Climate Ready Boston neighborhood names (Boston only). Basemap: OpenStreetMap contributors.</p>
-  <p>All shaded values are published estimates, not exact counts. Popups show each agency's own margin of error: 90% for Census-based values (LACE, SVI), 95% confidence intervals for CDC PLACES. Small tracts have wide margins, so differences between neighboring tracts may not be meaningful. Gray tracts have no published value (mostly harbor
-     islands, the airport, and parks). Neighborhood names marked "approx." come from a 2010 tract that overlaps the 2020
-     tract. Outlined neighborhoods are the exercise's scenario areas that the neighborhood source lists
-     (Roxbury, East Boston, Dorchester); Chinatown is not a separate unit in that source.</p>
-  <p>Built by DBbun LLC with Claude Code (Anthropic), model claude-sonnet-5-5. Source code:
-     <a href="https://github.com/DBbun/BostonHeatShield">github.com/DBbun/BostonHeatShield</a></p>
-</footer>
+<dialog id="sheet" aria-label="Details"></dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="data.js"></script>
 <script>
 const MEASURES = [
-  { key:"noac",   label:"Homes without air conditioning (%)",           src:"Census LACE 2023, experimental estimate" },
-  { key:"svi",    label:"Overall social vulnerability (0 to 1 percentile)", src:"CDC/ATSDR SVI 2022" },
-  { key:"age65",  label:"Residents age 65 and older (%)",               src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
-  { key:"pov",    label:"Residents below 150% of poverty (%)",          src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
-  { key:"disab",  label:"Residents with a disability (%)",              src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
-  { key:"noveh",  label:"Households with no vehicle (%)",               src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
-  { key:"limeng", label:"Residents with limited English (%)",           src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
-  { key:"asthma", label:"Adults with current asthma (%)",               src:"CDC PLACES, model-based estimate" },
-  { key:"copd",   label:"Adults with COPD (%)",                         src:"CDC PLACES, model-based estimate" },
-  { key:"diabetes", label:"Adults with diabetes (%)",                   src:"CDC PLACES, model-based estimate" },
+  { key:"noac",   short:"Homes without AC",     label:"Homes without air conditioning (%)",           src:"Census LACE 2023, experimental estimate" },
+  { key:"svi",    short:"Social vulnerability", label:"Overall social vulnerability (0 to 1 percentile)", src:"CDC/ATSDR SVI 2022" },
+  { key:"age65",  short:"Age 65 and older",     label:"Residents age 65 and older (%)",               src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
+  { key:"pov",    short:"Below 150% of poverty", label:"Residents below 150% of poverty (%)",         src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
+  { key:"disab",  short:"Disability",           label:"Residents with a disability (%)",              src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
+  { key:"noveh",  short:"No vehicle",           label:"Households with no vehicle (%)",               src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
+  { key:"limeng", short:"Limited English",      label:"Residents with limited English (%)",           src:"CDC/ATSDR SVI 2022 (ACS estimate)" },
+  { key:"asthma", short:"Current asthma",       label:"Adults with current asthma (%)",               src:"CDC PLACES, model-based estimate" },
+  { key:"copd",   short:"COPD",                 label:"Adults with COPD (%)",                         src:"CDC PLACES, model-based estimate" },
+  { key:"diabetes", short:"Diabetes",           label:"Adults with diabetes (%)",                     src:"CDC PLACES, model-based estimate" },
 ];
 const COLORS = ["#ffffb2","#fecc5c","#fd8d3c","#f03b20","#bd0026"];
 const FOCUS = ["Roxbury","East Boston","Dorchester"];
+const on = { fac:true, transit:true, focus:true };
 
-const map = L.map("map", { zoomControl:true }).setView([42.33, -71.07], 12);
+const map = L.map("map", { zoomControl:false }).setView([42.33, -71.07], 12);
+L.control.zoom({ position:"bottomright" }).addTo(map);
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom:18, attribution:"&copy; OpenStreetMap contributors" }).addTo(map);
 
@@ -124,29 +142,34 @@ function popup(p) {
   const noacTxt = p.noac === null ? "no data" :
     `${fmt(p.noac)}%` + (p.noac_m !== null ? ` (&plusmn;${fmt(p.noac_m)})` : "") +
     (p.noac_n !== null && p.occ ? `, about ${p.noac_n} of ${p.occ} homes` : "");
+  const vals = { noac:noacTxt, svi:fmt(p.svi, 2), age65:acs(p.age65, p.age65_m), pov:acs(p.pov, p.pov_m), disab:acs(p.disab, p.disab_m),
+    noveh:acs(p.noveh, p.noveh_m), limeng:acs(p.limeng, p.limeng_m), asthma:ci(p.asthma, p.asthma_lo, p.asthma_hi),
+    copd:ci(p.copd, p.copd_lo, p.copd_hi), diabetes:ci(p.diabetes, p.diabetes_lo, p.diabetes_hi) };
   const rows = [
     ["Population (SVI 2022)", p.pop === null ? "no data" : p.pop.toLocaleString()],
-    ["Homes without AC", noacTxt],
-    ["Social vulnerability (0-1)", fmt(p.svi, 2)],
-    ["Age 65 and older", acs(p.age65, p.age65_m)],
-    ["Below 150% of poverty", acs(p.pov, p.pov_m)],
-    ["Disability", acs(p.disab, p.disab_m)],
-    ["No vehicle", acs(p.noveh, p.noveh_m)],
-    ["Limited English", acs(p.limeng, p.limeng_m)],
-    ["Current asthma", ci(p.asthma, p.asthma_lo, p.asthma_hi)],
-    ["COPD", ci(p.copd, p.copd_lo, p.copd_hi)],
-    ["Diabetes", ci(p.diabetes, p.diabetes_lo, p.diabetes_hi)],
+    ["Homes without AC", vals.noac],
+    ["Social vulnerability (0-1)", vals.svi],
+    ["Age 65 and older", vals.age65],
+    ["Below 150% of poverty", vals.pov],
+    ["Disability", vals.disab],
+    ["No vehicle", vals.noveh],
+    ["Limited English", vals.limeng],
+    ["Current asthma", vals.asthma],
+    ["COPD", vals.copd],
+    ["Diabetes", vals.diabetes],
     ["Community centers / pools", p.n_cc === null ? "not loaded for " + p.city + " yet" : `${p.n_cc} / ${p.n_pool}`],
     ["MBTA bus stops", p.n_bus],
     ["Subway / light rail / commuter rail stations", `${p.n_rapid} / ${p.n_cr}`],
   ];
   return `<div class="pop"><h3>${hood}</h3><div class="sub">${p.hood === p.city ? "" : p.city + ", "}Census tract ${p.id}</div>
+    <div class="k">${current.short}</div><div class="big">${vals[current.key]}</div>
+    <details><summary>More details</summary>
     <table>${rows.map(r => `<tr><td>${r[0]}</td><td class="v">${r[1]}</td></tr>`).join("")}</table>
-    <div class="src">Published estimates, not exact counts. Poverty, age, disability, vehicle and English values show the 90% margin of error (&plusmn;); asthma, COPD and diabetes show the 95% confidence interval. The LACE air conditioning margin is also shown.</div></div>`;
+    <div class="src">Published estimates, not exact counts. Poverty, age, disability, vehicle and English values show the 90% margin of error (&plusmn;); asthma, COPD and diabetes show the 95% confidence interval. The LACE air conditioning margin is also shown.</div></details></div>`;
 }
 
 function style(f) {
-  const p = f.properties, focus = document.getElementById("focus").checked && FOCUS.includes(p.hood);
+  const p = f.properties, focus = on.focus && FOCUS.includes(p.hood);
   return { fillColor: colorFor(p[current.key]), fillOpacity:0.75,
            color: focus ? "#000" : "#777", weight: focus ? 2.5 : 0.6 };
 }
@@ -155,26 +178,19 @@ function draw() {
   breaks = computeBreaks(current.key);
   if (layer) map.removeLayer(layer);
   layer = L.geoJSON(TRACTS, { style, onEachFeature:(f, l) => {
-    l.bindPopup(popup(f.properties), { maxWidth:320 });
+    l.bindPopup(() => popup(f.properties), { maxWidth:300, autoPanPaddingTopLeft:[10, 190], autoPanPaddingBottomRight:[10, 80] });
     l.on("mouseover", () => l.setStyle({ weight:3 }));
     l.on("mouseout", () => layer.resetStyle(l));
   }}).addTo(map);
   layer.bringToBack();
   if (legend) map.removeControl(legend);
-  legend = L.control({ position:"bottomright" });
+  legend = L.control({ position:"bottomleft" });
   legend.onAdd = () => {
     const d = L.DomUtil.create("div", "legend");
     const lo = (x) => x.toFixed(current.key === "svi" ? 2 : 1);
-    const edges = [null, ...breaks, null];
-    let h = `<b>${current.label}</b>`;
-    COLORS.forEach((c,i) => {
-      const a = edges[i], b = edges[i+1];
-      const t = a === null ? `below ${lo(b)}` : b === null ? `${lo(a)} and above` : `${lo(a)} to ${lo(b)}`;
-      h += `<i style="background:${c}"></i>${t}<br>`;
-    });
-    h += `<i style="background:#cfcfcf"></i>no published value<br><span style="color:var(--muted)">${current.src}.
-      Shades are fifths of the tracts shown.</span>`;
-    d.innerHTML = h; return d;
+    d.innerHTML = `<b>${current.short}</b><div class="bar">${COLORS.map(c => `<i style="background:${c}"></i>`).join("")}</div>
+      <div class="lab"><span>below ${lo(breaks[0])}</span><span>${lo(breaks[3])}+</span></div><div class="nd"><i></i>no published value</div>`;
+    return d;
   };
   legend.addTo(map);
 }
@@ -202,12 +218,45 @@ STATIONS.forEach(s => {
 });
 transitLayer.addTo(map);
 
+/* popups grow when "More details" opens: let Leaflet re-fit them */
+map.on("popupopen", e => { const d = e.popup.getElement().querySelector("details"); if (d) d.addEventListener("toggle", () => e.popup.update()); });
 sel.addEventListener("change", () => { current = MEASURES[+sel.value]; draw(); });
-document.getElementById("fac").addEventListener("change", e => e.target.checked ? facLayer.addTo(map) : map.removeLayer(facLayer));
-document.getElementById("transit").addEventListener("change", e => e.target.checked ? transitLayer.addTo(map) : map.removeLayer(transitLayer));
-document.getElementById("focus").addEventListener("change", () => layer.setStyle(style));
 draw();
-map.fitBounds(L.geoJSON(TRACTS).getBounds());
+map.fitBounds(L.geoJSON(TRACTS).getBounds(), { paddingTopLeft:[10, 190], paddingBottomRight:[10, 10] });
+
+/* ---------- sheets ---------- */
+const sheet = document.getElementById("sheet");
+function openSheet(html) {
+  sheet.innerHTML = `<div class="sin"><div class="grab"></div>${html}<button class="btn" id="closeSheet">Done</button></div>`;
+  sheet.querySelector("#closeSheet").onclick = () => sheet.close();
+  sheet.showModal(); sheet.scrollTop = 0;
+}
+sheet.addEventListener("click", e => { if (e.target === sheet) sheet.close(); });
+
+document.getElementById("layersBtn").onclick = () => {
+  const row = (id, label) => `<div class="row"><span>${label}</span><button class="sw" role="switch" id="sw_${id}" aria-label="${label}" aria-checked="${on[id]}"></button></div>`;
+  openSheet(`<h2>Layers</h2><div class="list">${row("fac", "Community centers and pools")}${row("transit", "MBTA subway, light rail and stations")}${row("focus", "Outline scenario neighborhoods")}</div>`);
+  const hook = (id, fn) => { const b = sheet.querySelector("#sw_" + id); b.onclick = () => { on[id] = !on[id]; b.setAttribute("aria-checked", on[id]); fn(); }; };
+  hook("fac", () => on.fac ? facLayer.addTo(map) : map.removeLayer(facLayer));
+  hook("transit", () => on.transit ? transitLayer.addTo(map) : map.removeLayer(transitLayer));
+  hook("focus", () => layer.setStyle(style));
+};
+
+document.getElementById("aboutBtn").onclick = () => openSheet(`<h2>About the data</h2>
+  <p>Planning demo using public data only. It is not a forecast, not real-time, and not an official city or NOAA tool.</p>
+  <div class="list">
+    <details class="disc"><summary>Where the numbers come from</summary><div>
+      <p>Census Bureau LACE 2023 (experimental estimates of homes without air conditioning, with margins of error); CDC/ATSDR Social Vulnerability Index 2022 (American Community Survey estimates); CDC PLACES (model-based small-area estimates from health surveys); City of Boston community centers and pools (Boston only so far; Cambridge and Somerville facilities are not loaded yet); MBTA GTFS schedule feed (Fall 2026 edition, scheduled routes only, no service alerts); Census TIGER 2024 tract and city boundaries; Climate Ready Boston neighborhood names (Boston only). Basemap: OpenStreetMap contributors.</p></div></details>
+    <details class="disc"><summary>How to read the values</summary><div>
+      <p>All shaded values are published estimates, not exact counts. Popups show each agency's own margin of error: 90% for Census-based values (LACE, SVI), 95% confidence intervals for CDC PLACES. Small tracts have wide margins, so differences between neighboring tracts may not be meaningful.</p>
+      <p>Gray tracts have no published value (mostly harbor islands, the airport, and parks). Neighborhood names marked "approx." come from a 2010 tract that overlaps the 2020 tract. Outlined neighborhoods are the exercise's scenario areas that the neighborhood source lists (Roxbury, East Boston, Dorchester); Chinatown is not a separate unit in that source.</p></div></details>
+  </div>
+  <p class="fine">Built by DBbun LLC with Claude Code (Anthropic), model claude-sonnet-5-5. Source code: <a href="https://github.com/DBbun/BostonHeatShield">github.com/DBbun/BostonHeatShield</a></p>`);
+
+document.getElementById("joinBtn").onclick = () => openSheet(`<h2>Take part</h2>
+  <p>Boston HeatShield won NOAA's 2026 Heat Tabletop Design Challenge and is being built into a largely online exercise. Want to take part, as a resident, an agency, an organization or an observer?</p>
+  <a class="btn pri" href="mailto:uri.kartoun@dbbun.com?subject=Boston%20HeatShield%3A%20I%20want%20to%20take%20part&body=Name%3A%0D%0AHow%20I%20would%20take%20part%20(resident%2C%20agency%2C%20organization%2C%20observer)%3A%0D%0AOrganization%20(optional)%3A%0D%0ANeighborhood%20(optional)%3A%0D%0A">Sign up by email</a>
+  <p class="fine">The exercise is in early planning and no dates are set. I will use your details only to contact you about it. This is an independent DBbun project; no city agency or NOAA office is running it.</p>`);
 </script>
 </body>
 </html>

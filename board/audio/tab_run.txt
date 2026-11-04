@@ -1,7 +1,5 @@
-This is the Run the session tab, the main screen. On the left is the list of steps, ten in all, from the welcome to the hotwash. The dark one is the current step. On the right is what to do for that step.
+This is the Run tab. The row of numbered circles at the top shows the ten steps. The filled one is where you are. Tap any circle to jump.
 
-For each step, read aloud the text in the blue box. It sets the scene for the group. Then ask the decision-forcing questions, one at a time, and use the facilitator prompts if the group stalls. Some steps tell you to send an envelope to one participant. The Open the envelope cards button takes you to the Cards tab.
+For each step, read aloud the blue card. Then ask the group the questions below it, one at a time. If you need help, open Facilitator tips under More.
 
-At the bottom of every step are five rules to apply after every inject. Every decision needs an owner. Every action needs a trigger. Every neighborhood comparison needs an equity check. Every resource assumption needs a backup. And every unresolved gap becomes an improvement item.
-
-When the group is ready to move on, press Mark done and go to next. Press Log a decision to record what the group decided. If time is short, drop the multilingual inject or the persona swap. Never cut the hotwash.
+When the group is ready, press Done and Next. Press Decision to log what they decided. If time is short, drop the multilingual inject or the persona swap. Never cut the hotwash.

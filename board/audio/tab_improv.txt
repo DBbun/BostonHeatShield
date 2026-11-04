@@ -1,5 +1,3 @@
-This is the Improvement plan. Every gap the group found becomes an item here, sorted by when it can be fixed: an immediate fix, thirty days, sixty days, ninety days, or a long-term investment.
+This is the Plan tab. Every gap the group found becomes an item here. Pick a timeframe: now, thirty, sixty or ninety days, or long term. Write the action, and press Add to plan.
 
-Choose a timeframe, name an owner by role, describe the action, and note the equity impact and any dependencies. Then press Add item. You must write an action. Items appear below under their timeframe.
-
-A good item is small and owned. Not improve communication, but: the community organization lead confirms the translated message process within thirty days. Use this tab at the end of Module 3 for the three picks, and again in the hotwash for anything left over.
+A good item is small and owned. Not improve communication, but: the community organization lead confirms the translated message process within thirty days. Use this tab at the end of Module 3, and again in the hotwash.

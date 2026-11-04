@@ -1,7 +1,5 @@
-This is the Cards tab. It has two sets of fictional cards.
+This is the Cards tab. Under Role envelopes are five private messages, each for one participant at a particular inject. Tap an envelope to read it, then press Copy message and paste it into a private chat or email.
 
-First, five role envelopes: public health, utility liaison, community organization, housing or property manager, and transportation or paratransit. Each envelope is a private message for one participant, sent at a particular inject. The card tells you when to send it and what decision it forces. Press Copy message, then paste it into a private chat or email to that person. Show large puts the text on screen so you can read it aloud.
+Under Persona cards are five fictional characters for the persona swap. Draw a random card, or tap one to read it.
 
-Second, five persona cards, used once, in the persona swap. Draw a random card, or copy one for each person.
-
-Everything here is invented for the exercise. Do not add real names or real health details.
+Everything here is invented. Do not add real names or real health details.

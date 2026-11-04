@@ -1,5 +1,3 @@
-The persona swap. Four minutes. The idea is simple: each person steps out of their own role for two minutes and answers as a fictional person who is living through the heat.
+The persona swap. Four minutes. Each person steps out of their own role for two minutes and answers as a fictional person living through the heat. Go to the Cards tab and press Draw a random card, or tap each persona to read it. The characters are an older adult in a high-rise, a resident who is unhoused, a cooling site operator, a utility liaison, and a community health worker.
 
-Go to the Cards tab, find the Persona cards, and either press Draw a random card or copy one card for each person. The cards are an older adult in a high-rise, a resident who is unhoused, a cooling site operator, a utility liaison, and a community health worker. All of them are fictional.
-
-Ask each person: from this character's point of view, what would you need that nobody has asked about yet? Write what you hear into the Decision log as data gaps, by role, not by name.
+Ask each person: from this character's point of view, what would you need that nobody has asked about yet? Log what you hear as data gaps, by role.

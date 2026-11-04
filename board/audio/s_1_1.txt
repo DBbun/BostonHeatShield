@@ -1,7 +1,3 @@
-This is Module 1, the outlook. Ten minutes. It is Thursday morning, seven days before the expected peak, and no emergency has been declared yet.
+Module 1, the outlook. Ten minutes. It is Thursday morning, a week before the expected peak, and no emergency has been declared. Read the blue card. Then ask: do you act now or wait? What forecast threshold triggers action? And who sends the first message, and how does it reach people with no internet, people who speak other languages, older adults living alone, and people who are unhoused?
 
-Read the text in the blue box. Then ask the decision-forcing questions: do you act now or wait, what forecast threshold triggers action, and who sends the first message, and how does it reach people with no internet, people who speak other languages, older adults living alone, and people who are unhoused.
-
-Your job here is to push for specifics. Ask who acts first, who has the authority, and who receives the message. If someone says there should be outreach, ask who, by when, and triggered by what.
-
-As the group answers, fill in the first two columns of the risk board, daytime heat and overnight recovery. When the module ends, go to the Risk board tab and press Save: After Module 1. Then mark this step done.
+Push for specifics: who acts first, who has authority, who receives the message. As answers come, fill the first two columns of the Risk board. When the module ends, save the snapshot After Module 1, and press Done and Next.
