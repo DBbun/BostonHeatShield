@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HeatShield Facilitator Board</title>
+<meta name="description" content="Facilitator board for the Boston HeatShield online Round 1. Runs in your browser; nothing is sent anywhere.">
+<style>
+:root{--bg:#fff;--ink:#111;--dim:#555;--line:#222;--soft:#e9e9e9;--ok:#1b6b34;--watch:#8a5200;--crit:#a3201a;--focus:#0b57d0}
+*{box-sizing:border-box}
+html{font-size:16px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;line-height:1.45}
+body.large{font-size:20px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:#fff;border:2px solid var(--line);border-radius:8px;padding:.45em .9em}
+button:hover{background:var(--soft)}
+button.pri{background:#111;color:#fff}
+button.pri:hover{background:#333}
+button.sm{padding:.25em .6em;font-size:.85em}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+input,select,textarea{border:2px solid var(--line);border-radius:6px;padding:.4em .55em;background:#fff;width:100%}
+textarea{min-height:5.5em;resize:vertical}
+label{display:block;font-weight:700;margin:.6em 0 .2em}
+h1{font-size:1.25rem;margin:0}
+h2{font-size:1.35rem;margin:.2em 0 .5em}
+h3{font-size:1.05rem;margin:1em 0 .3em}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px 40px}
+.top{position:sticky;top:0;z-index:5;background:#fff;border-bottom:3px solid #111}
+.topin{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between}
+.brand small{display:block;color:var(--dim);font-size:.8rem}
+.clock{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.blk{font-weight:700}
+.big{font-size:1.9rem;font-weight:700;font-variant-numeric:tabular-nums;min-width:5.2em;text-align:center}
+.big.over{color:var(--crit)}
+.tot{color:var(--dim);font-variant-numeric:tabular-nums}
+.banner{background:#111;color:#fff;font-size:.85rem;text-align:center;padding:6px 12px}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+nav button{border-radius:8px 8px 0 0}
+nav button[aria-selected=true]{background:#111;color:#fff}
+.cols{display:grid;grid-template-columns:280px 1fr;gap:20px}
+@media(max-width:820px){.cols{grid-template-columns:1fr}}
+.steps{display:flex;flex-direction:column;gap:6px}
+.steps button{text-align:left;display:flex;gap:8px;justify-content:space-between;align-items:baseline}
+.steps button[aria-current=step]{background:#111;color:#fff}
+.steps .m{font-size:.8em;opacity:.8;white-space:nowrap}
+.card{border:2px solid var(--line);border-radius:10px;padding:14px 16px;margin:0 0 14px}
+.read{border-left:6px solid #111;background:#f4f4f4;padding:10px 14px;margin:8px 0;font-style:italic}
+.tag{display:inline-block;border:2px solid var(--line);border-radius:999px;padding:.05em .7em;font-size:.85em;font-weight:700;margin-right:6px}
+ul{margin:.3em 0 .6em 1.2em;padding:0}
+li{margin:.15em 0}
+table{border-collapse:collapse;width:100%}
+th,td{border:2px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:#fff}
+td.cellbtn{padding:4px}
+td.cellbtn button{width:100%;min-height:2.6em;font-weight:700}
+.s1{border-color:var(--ok);color:var(--ok)}
+.s2{border-color:var(--watch);color:var(--watch);border-style:dashed}
+.s3{border-color:var(--crit);color:#fff;background:var(--crit)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.row2{grid-template-columns:1fr}}
+.muted{color:var(--dim)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.empty{color:var(--dim);font-style:italic}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:.2s}
+.toast.on{opacity:1}
+.bigcard{border:4px solid #111;border-radius:12px;padding:20px 24px;margin:0 0 16px;font-size:1.3em}
+footer{margin-top:30px;border-top:2px solid #111;padding-top:12px;color:var(--dim);font-size:.85rem}
+@media print{.top,nav,.actions,.banner button,.noprint{display:none!important}.card{break-inside:avoid}body{font-size:11pt}}
+</style>
+</head>
+<body>
+<div class="banner">Fictional exercise. All numbers are simulated. Not an official NOAA, NIHHIS or City of Boston product. Notes stay in this browser; nothing is sent anywhere. Write roles, not names.</div>
+<header class="top"><div class="topin">
+  <div class="brand"><h1>HeatShield Facilitator Board</h1><small>Boston HeatShield: Online Round 1</small></div>
+  <div class="clock" aria-label="Timer">
+    <span class="blk" id="blkName"></span>
+    <span class="big" id="blkTime">0:00</span>
+    <span class="tot" id="totTime"></span>
+    <button class="pri" id="runBtn">Start</button>
+    <button id="prevBlk" class="sm" title="Previous block">&#9664; Block</button>
+    <button id="nextBlk" class="sm" title="Next block">Block &#9654;</button>
+  </div>
+</div></header>
+<main class="wrap">
+  <nav role="tablist" id="tabs" aria-label="Sections"></nav>
+  <section id="panel" role="tabpanel" tabindex="-1"></section>
+  <footer>
+    Adapted from the Boston HeatShield Situation Manual by DBbun LLC (Cambridge, Massachusetts), submitted June 30, 2026 to the NIHHIS Heat Tabletop Exercise Design Challenge. The scenario, injects and numbers are simulated for exercise play.
+    No payment, prizes or other rewards are offered for taking part. Drafted with Claude Code (model claude-sonnet-5-5).
+    <a href="https://github.com/DBbun/BostonHeatShield">Source on GitHub</a>.
+  </footer>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- content (adapted from the Situation Manual and the Round 1 run sheet) ---------- */
+const BLOCKS = [
+  { name: 'Welcome', mins: 5 },
+  { name: 'Module 1: Outlook and Preparedness', mins: 10 },
+  { name: 'Module 2: Heat Emergency and Power Stress', mins: 28 },
+  { name: 'Module 3: Recovery and Resilience', mins: 10 },
+  { name: 'Hotwash and close', mins: 7 },
+];
+const NEIGH = ['Roxbury', 'East Boston', 'Chinatown', 'Dorchester', 'Citywide cooling sites'];
+const COLS = ['Daytime heat', 'Overnight recovery', 'Cooling access and power', 'EMS and language need', 'Outreach status'];
+const STATUS = ['—', 'OK', 'Watch', 'Critical'];
+const SNAPS = [['m1', 'After Module 1'], ['mid', 'After Inject 2.2'], ['m3', 'After Module 3']];
+const CATS = ['Immediate fix', '30 days', '60 days', '90 days', 'Long-term investment'];
+
+const ENVELOPES = [
+  { id: 1, role: 'Public health', share: 'Share at Inject 2.1', text: 'Preliminary syndromic surveillance and 911 call notes show a sharp increase in heat-related symptoms in two environmental justice neighborhoods. A home health provider also reports questions about insulin and temperature-sensitive medication after several hours without reliable refrigeration. Data are preliminary and not yet cleared for public release.', forces: 'What health data can be shared, with whom, how quickly, and how it changes cooling-center operations.' },
+  { id: 2, role: 'Utility liaison', share: 'Share at Inject 2.2', text: 'A feeder serving parts of a heat hotspot is under stress. The utility cannot yet provide a restoration or stabilization time. Load reduction may be requested, but public messaging must avoid panic.', forces: 'Coordination between utility information, emergency management, and medical-device continuity.' },
+  { id: 3, role: 'Community organization', share: 'Share at Inject 2.6', text: 'Residents are reporting that official heat messages are not reaching some older adults, renters, people with limited English proficiency, and residents without reliable phone or internet access.', forces: 'How community reports are elevated, who updates multilingual messaging, and how trusted messengers are activated.' },
+  { id: 4, role: 'Housing or property manager', share: 'Optional. Share at Inject 2.2 if someone holds this role', text: 'A multifamily building reports high indoor temperatures, unreliable elevators, and several mobility-impaired residents above the eighth floor. The building has limited staff on site and no clear protocol.', forces: 'Who can request welfare checks, how building information is verified, and what support is needed.' },
+  { id: 5, role: 'Transportation or paratransit', share: 'Share at Inject 2.5', text: 'Requests for rides to cooling locations and medical appointments exceed available accessible vehicle capacity. Some cooling sites are open but difficult to reach safely during peak afternoon heat.', forces: 'Prioritize trips and coordinate with community groups.' },
+];
+const PERSONAS = [
+  { title: 'An older adult in a high-rise', text: 'You live alone on the ninth floor. The elevator works only sometimes. The heat in your apartment has not dropped for three nights. You are not sure which cooling site is open or how to get there.' },
+  { title: 'A resident who is unhoused', text: 'You spend the day outdoors. Official cooling centers have rules about bags and pets, and the nearest one is far. You have heard the rules might change but not where to check.' },
+  { title: 'A cooling-site operator', text: 'Your site is over capacity. Your staff are tired, your backup power is untested, and your site is not accessible for wheelchairs by the side entrance.' },
+  { title: 'A utility liaison', text: 'You know a feeder is under stress but cannot say when it will stabilize. You are worried that a public message will cause panic or be taken as a promise.' },
+  { title: 'A community health worker', text: 'Your clients trust you more than any official alert. They ask you what is true. You hear things in the community that never reach official briefings.' },
+];
+const RULES = [
+  'This is a no-fault, low-stress exercise. Different views and disagreement are expected and useful.',
+  'Respond using what you know about current plans and what exists today. Do not assume unlimited staff, vehicles, translators, shelter space, power or cooling-center capacity.',
+  'Decisions here are not precedent-setting and do not reflect anyone\'s organization.',
+  'Pair every problem with a suggested action, an owner and a realistic next step.',
+  'Lived experience counts as operational information, not as background.',
+  'Quieter voices are invited in, and community voices are not crowded out by technical ones.',
+  'Please do not share private health details or confidential information.',
+];
+const FACIL = [
+  ['Every decision needs an owner.', 'Who has authority to act, and who supports?'],
+  ['Every action needs a trigger.', 'What data or threshold tells you to move from monitoring to action?'],
+  ['Every neighborhood comparison needs an equity check.', 'Who benefits, who might be missed, and how would anyone know?'],
+  ['Every resource assumption needs a backup.', 'What if the preferred site, staff, vehicle, translator or power source is not available?'],
+  ['Every unresolved gap becomes an improvement item.', 'Is it an immediate fix, a 30/60/90-day action, or a long-term investment?'],
+];
+const STEPS = [
+  { id: 'W', block: 0, mins: 5, title: 'Welcome and ground rules', kind: 'Welcome',
+    read: '"Thank you for coming. I\'m Uri Kartoun, founder of DBbun LLC in Cambridge. This is a free, voluntary round of Boston HeatShield, a heat wave exercise that won NOAA and NIHHIS\'s 2026 Heat Tabletop Design Challenge. It is a fictional scenario with simulated numbers. It is not an official NOAA, NIHHIS or City of Boston project, and I run it on my own. For the next hour you each have a role. You will move through a heat wave in three steps: the days before it, the worst day, and the recovery. At each step you will get news, and the group decides together what to do and who does it. I write down decisions by role, not by name, and I am not recording this call. Please do not share private health details or confidential information. Nobody is graded, and there are no wrong answers. When it\'s over I\'ll send everyone a short written summary. Any questions before we start?"',
+    list: ['Rules', RULES], extra: 'Scenario in one minute: A simulated near-future heat wave hits Boston from Thursday to Monday in late July, based on a modeled hot week in 2019. Daytime highs reach the upper 90s to low 100s. Overnight lows stay above 78 to 82 degrees in many areas. Dense neighborhoods with lots of pavement and few trees stay hottest. By Day 4, heavy cooling demand puts localized stress on the power grid. It is not a citywide blackout, but several buildings, cooling sites and medically vulnerable residents are affected. All numbers are simulated.',
+    todo: ['Check that captions are on and recording is off.', 'Confirm each person\'s role. Fill empty roles by reading the envelope aloud.'] },
+  { id: '1.1', block: 1, mins: 10, title: 'Inject 1.1: 7-day forecast signal', kind: 'Module 1',
+    read: '"It is Thursday morning, seven days before the expected peak. Forecast confidence is rising. Several agencies get an update that dangerous heat and warm nights are likely next weekend. No formal emergency has been declared."',
+    questions: ['Do you act now or wait?', 'What forecast threshold triggers cooling-site readiness, outreach, staffing checks and partner calls?', 'Who sends the first coordinated message, and how does it reach people without internet, people who speak other languages, older adults living alone, and people who are unhoused?'],
+    prompts: ['Push for concrete triggers, not general intent: who acts first, who has authority, who receives the message?', 'Ask what changes if the formal heat threshold has not yet been met.', 'Treat community reports as actionable, not as background.'],
+    todo: ['Fill the first two risk-board columns (daytime heat, overnight recovery).', 'Save a risk-board snapshot: After Module 1.'] },
+  { id: '2.0', block: 2, mins: 2, title: 'Module 2: Set the scene (Day 4)', kind: 'Module 2',
+    read: '"It is Sunday afternoon, Day 4 of the heat wave. Daytime heat has been severe for days and nights have stayed dangerously warm. Cooling-center attendance is up. EMS and urgent care are seeing more heat-related calls. The utility reports localized power stress and asks for conservation in some neighborhoods."',
+    extra: 'Data reveals (simulated, say so): 3 PM board shows very high daytime heat, with a modeled maximum of 104.5 degrees F. 3 AM board shows poor overnight recovery, with about 87 percent of modeled areas above the 36-hour heat-duration threshold. Power stress overlay shows a heat island intensity of about 11 degrees F in the densest, least-shaded areas.',
+    prompts: ['For every "should", ask who owns it, what authority they use, what data triggers it, and what happens if the preferred resource is not available.'] },
+  { id: '2.1', block: 2, mins: 4, title: 'Inject 2.1: Competing authority', kind: 'Module 2', envelope: 1,
+    read: '"Public health recommends expanding cooling resources and wellness checks now. Emergency management has not issued a broader declaration because some thresholds are unclear."',
+    questions: ['Who has authority to expand cooling operations?', 'What data is enough to act when residents already face unsafe indoor heat?'] },
+  { id: '2.2', block: 2, mins: 6, title: 'Inject 2.2: Utility grid stress', kind: 'Module 2', envelope: 2, envelope2: 4,
+    read: '"The utility reports sustained cooling demand and asks for conservation. Localized power-quality problems affect parts of two neighborhoods. Restoration times are uncertain."',
+    questions: ['How does utility information reach emergency management, cooling sites and community groups?', 'What is the protocol for people on powered medical devices?'],
+    todo: ['Save a risk-board snapshot: After Inject 2.2.'] },
+  { id: '2.5', block: 2, mins: 6, title: 'Inject 2.5: Cooling center capacity', kind: 'Module 2', envelope: 5,
+    read: '"A primary cooling site reaches 115 percent of planned capacity. A backup site lacks accessible bathrooms and is hard to reach by transit. Another has backup power but no confirmed staff."',
+    questions: ['Who opens the backup site?', 'What minimum services and accessibility standard apply?', 'What is the transportation plan?'] },
+  { id: '2.6', block: 2, mins: 6, title: 'Inject 2.6: Multilingual communications gap', kind: 'Module 2', envelope: 3,
+    read: '"A trusted messenger reports inconsistent or late information for Spanish-, Portuguese-, Chinese-, Haitian Creole- and Vietnamese-speaking residents. Some think an open site is closed."',
+    questions: ['Who approves translated messages?', 'Which trusted messengers are activated?', 'How are corrections issued quickly?'],
+    todo: ['If time is short, drop this inject or the persona swap. Do not cut the hotwash.'] },
+  { id: 'P', block: 2, mins: 4, title: 'Persona swap', kind: 'Module 2', personas: true,
+    read: 'Hand out the persona cards (Cards tab). Each person, for two minutes, answers as the person on the card.',
+    questions: ['What would you need that nobody has asked about yet?'] },
+  { id: '3.4', block: 3, mins: 10, title: 'Inject 3.4: Long-term investment', kind: 'Module 3',
+    read: '"It is Wednesday. Temperatures have fallen, but the effects continue. Funding is available for only three near-term improvements. The options are: backup power at cooling sites, microgrid planning for resilience hubs, paid multilingual trusted-messenger work, a wellness-check protocol for high-rises, shade and cooling corridors, depaving and cool surfaces, or a heat-risk data dashboard."',
+    questions: ['Which three do you pick, and why? What equity criteria do you use?', 'What can be done in 30, 60 and 90 days, and what needs longer capital planning?', 'Who owns each follow-up?'],
+    prompts: ['Return to the risk board and compare the options against the same pattern.', 'For each pick, ask for an owner, a timeframe, a resource need, the equity impact, and evidence it would reduce heat risk.', 'Keep the talk on gaps this round revealed, not on climate planning in general.'],
+    todo: ['Save a risk-board snapshot: After Module 3.', 'Enter the three picks in the Improvements tab.'] },
+  { id: 'H', block: 4, mins: 7, title: 'Hotwash and close', kind: 'Close',
+    questions: ['What worked well and should be kept?', 'Where did the response depend on people knowing each other instead of on a written protocol?', 'What was missing from the shared picture of the situation?', 'What is the one thing to fix before the next real heat wave?'],
+    read: '"Thank you all. What you said today is worth more than any simulated number. I\'ll write up the decisions and gaps by role, not by name, and send everyone a short written summary. If you want to be thanked by name in it, you told me on the form. This is a free, voluntary effort and not an official NOAA project. Take care in the heat."',
+    todo: ['Capture hotwash answers in the Notes tab.', 'Download the notes file before closing this page.'] },
+];
+
+/* ---------- state ---------- */
+const KEY = 'heatshield.board.v1';
+const fresh = () => ({ block: 0, step: 0, spent: BLOCKS.map(() => 0), done: {}, risk: NEIGH.map(() => COLS.map(() => 0)),
+  snaps: {}, log: [], improv: [], hot: {}, notes: '', large: false, tab: 'run' });
+let S = fresh();
+try { const o = JSON.parse(localStorage.getItem(KEY) || 'null'); if (o && typeof o === 'object') S = Object.assign(fresh(), o); } catch (e) {}
+if (!Array.isArray(S.spent) || S.spent.length !== BLOCKS.length) S.spent = BLOCKS.map(() => 0);
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+
+/* ---------- helpers ---------- */
+function h(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') e.className = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else if (v === true) e.setAttribute(k, '');
+    else if (v !== false && v != null) e.setAttribute(k, v);
+  }
+  for (const c of kids.flat()) { if (c == null || c === false) continue; e.append(c.nodeType ? c : document.createTextNode(c)); }
+  return e;
+}
+const $ = id => document.getElementById(id);
+let toastT;
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 1800); }
+async function copy(text, msg = 'Copied') {
+  try { await navigator.clipboard.writeText(text); toast(msg); }
+  catch (e) { const ta = h('textarea', { style: 'position:fixed;opacity:0' }); ta.value = text; document.body.append(ta); ta.select();
+    try { document.execCommand('copy'); toast(msg); } catch (e2) { toast('Could not copy'); } ta.remove(); }
+}
+const mmss = ms => { const s = Math.floor(Math.abs(ms) / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+const stepById = id => STEPS.find(s => s.id === id);
+
+/* ---------- timer ---------- */
+let running = false, last = 0;
+function setBlock(i) { S.block = Math.max(0, Math.min(BLOCKS.length - 1, i)); save(); paintClock(); }
+function paintClock() {
+  const b = BLOCKS[S.block], left = b.mins * 60000 - S.spent[S.block];
+  $('blkName').textContent = b.name + ' (' + b.mins + ' min)';
+  const t = $('blkTime'); t.textContent = (left < 0 ? '+' : '') + mmss(left); t.classList.toggle('over', left < 0);
+  const tot = S.spent.reduce((a, c) => a + c, 0);
+  $('totTime').textContent = 'Total ' + mmss(tot) + ' of 60:00';
+  $('runBtn').textContent = running ? 'Pause' : 'Start';
+}
+$('runBtn').onclick = () => { running = !running; last = performance.now(); paintClock(); save(); };
+$('prevBlk').onclick = () => setBlock(S.block - 1);
+$('nextBlk').onclick = () => setBlock(S.block + 1);
+let saveTick = 0;
+setInterval(() => {
+  const now = performance.now();
+  if (running) { S.spent[S.block] += now - last; if (++saveTick % 8 === 0) save(); }
+  last = now; paintClock();
+}, 250);
+addEventListener('beforeunload', save);
+
+/* ---------- tabs ---------- */
+const TABS = [['run', 'Run the session'], ['risk', 'Risk board'], ['log', 'Decision log'], ['improv', 'Improvements'], ['cards', 'Cards'], ['notes', 'Notes and export']];
+function paintTabs() {
+  const nav = $('tabs'); nav.replaceChildren(...TABS.map(([id, label]) =>
+    h('button', { role: 'tab', 'aria-selected': S.tab === id ? 'true' : 'false', onclick: () => { S.tab = id; save(); paintTabs(); render(); } }, label)));
+}
+function render() {
+  const p = $('panel'); p.replaceChildren();
+  ({ run: viewRun, risk: viewRisk, log: viewLog, improv: viewImprov, cards: viewCards, notes: viewNotes }[S.tab] || viewRun)(p);
+}
+
+/* ---------- Run ---------- */
+function viewRun(p) {
+  const cur = STEPS[S.step], list = h('div', { class: 'steps', role: 'list' });
+  STEPS.forEach((s, i) => list.append(h('button', {
+    'aria-current': i === S.step ? 'step' : false,
+    onclick: () => { S.step = i; S.block = s.block; save(); paintClock(); render(); } },
+    h('span', {}, (S.done[s.id] ? '✓ ' : '') + s.title), h('span', { class: 'm' }, s.mins + ' min'))));
+  const d = h('div', {});
+  d.append(h('div', {}, h('span', { class: 'tag' }, cur.kind), h('span', { class: 'tag' }, cur.mins + ' min')));
+  d.append(h('h2', {}, cur.title));
+  if (cur.envelope) {
+    const e = ENVELOPES.find(x => x.id === cur.envelope), e2 = cur.envelope2 && ENVELOPES.find(x => x.id === cur.envelope2);
+    d.append(h('div', { class: 'card' }, h('strong', {}, 'Send now: '), `Envelope ${e.id} (${e.role})` + (e2 ? ` and Envelope ${e2.id} (${e2.role}), if someone holds that role` : ''),
+      h('div', { class: 'actions' }, h('button', { class: 'sm', onclick: () => { S.tab = 'cards'; save(); paintTabs(); render(); } }, 'Open the envelope cards'))));
+  }
+  if (cur.read) d.append(h('h3', {}, 'Read aloud'), h('div', { class: 'read' }, cur.read));
+  if (cur.extra) d.append(h('div', { class: 'card' }, cur.extra));
+  if (cur.list) d.append(h('h3', {}, cur.list[0]), h('ul', {}, cur.list[1].map(x => h('li', {}, x))));
+  if (cur.questions) d.append(h('h3', {}, 'Decision-forcing questions'), h('ul', {}, cur.questions.map(x => h('li', {}, x))));
+  if (cur.prompts) d.append(h('h3', {}, 'Facilitator prompts'), h('ul', {}, cur.prompts.map(x => h('li', {}, x))));
+  if (cur.todo) d.append(h('h3', {}, 'Do'), h('ul', {}, cur.todo.map(x => h('li', {}, x))));
+  d.append(h('h3', {}, 'After every inject'), h('ul', {}, FACIL.map(f => h('li', {}, h('strong', {}, f[0] + ' '), f[1]))));
+  d.append(h('div', { class: 'actions' },
+    h('button', { onclick: () => { S.step = Math.max(0, S.step - 1); S.block = STEPS[S.step].block; save(); paintClock(); render(); } }, '◀ Previous'),
+    h('button', { class: 'pri', onclick: () => { S.done[cur.id] = true; S.step = Math.min(STEPS.length - 1, S.step + 1); S.block = STEPS[S.step].block; save(); paintClock(); render(); } }, 'Mark done and go to next ▶'),
+    h('button', { onclick: () => { S.tab = 'log'; save(); paintTabs(); render(); } }, 'Log a decision')));
+  p.append(h('div', { class: 'cols' }, h('div', {}, h('h3', { style: 'margin-top:0' }, 'Steps'), list), d));
+}
+
+/* ---------- Risk board ---------- */
+function riskTable(grid, editable) {
+  const t = h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'Neighborhood or system'), COLS.map(c => h('th', {}, c)))));
+  const tb = h('tbody', {});
+  NEIGH.forEach((n, r) => tb.append(h('tr', {}, h('th', { scope: 'row' }, n), COLS.map((c, k) => {
+    const v = grid[r][k];
+    if (!editable) return h('td', {}, STATUS[v]);
+    return h('td', { class: 'cellbtn' }, h('button', { class: 's' + v, 'aria-label': `${n}, ${c}: ${STATUS[v]}. Click to change.`,
+      onclick: ev => { S.risk[r][k] = (S.risk[r][k] + 1) % 4; save(); const b = ev.currentTarget; b.className = 's' + S.risk[r][k]; b.textContent = STATUS[S.risk[r][k]];
+        b.setAttribute('aria-label', `${n}, ${c}: ${STATUS[S.risk[r][k]]}. Click to change.`); } }, STATUS[v]));
+  }))));
+  t.append(tb); return t;
+}
+function viewRisk(p) {
+  p.append(h('h2', {}, 'Neighborhood risk board'),
+    h('p', { class: 'muted' }, 'Click a cell to cycle: — (not set), OK, Watch, Critical. These are exercise values, not an official map. Save a snapshot after Module 1, after Inject 2.2, and after Module 3.'),
+    riskTable(S.risk, true));
+  const sel = h('select', { id: 'snapSel', 'aria-label': 'View a saved snapshot' }, h('option', { value: '' }, 'Choose a snapshot to view'), SNAPS.filter(([k]) => S.snaps[k]).map(([k, l]) => h('option', { value: k }, l + ' (saved ' + new Date(S.snaps[k].at).toLocaleTimeString() + ')')));
+  const view = h('div', {});
+  sel.onchange = () => { view.replaceChildren(); const s = S.snaps[sel.value]; if (s) view.append(h('h3', {}, SNAPS.find(x => x[0] === sel.value)[1] + ' (read-only)'), riskTable(s.grid, false)); };
+  p.append(h('h3', {}, 'Snapshots'), h('div', { class: 'actions' }, SNAPS.map(([k, l]) => h('button', { onclick: () => { S.snaps[k] = { at: Date.now(), grid: S.risk.map(r => r.slice()) }; save(); toast('Saved: ' + l); render(); } }, 'Save: ' + l))), h('div', { class: 'row2' }, sel, h('span', {})), view);
+}
+
+/* ---------- Decision log ---------- */
+function viewLog(p) {
+  const f = {}; const fld = (key, label, area) => { const el = area ? h('textarea', { id: 'f_' + key }) : h('input', { id: 'f_' + key, type: 'text' }); f[key] = el; return h('div', {}, h('label', { for: 'f_' + key }, label), el); };
+  const stepSel = h('select', { id: 'f_step' }, STEPS.map(s => h('option', { value: s.id }, s.title))); stepSel.value = STEPS[S.step].id;
+  p.append(h('h2', {}, 'Decision log'), h('p', { class: 'muted' }, 'One entry per decision. Use roles, not names. Leave out private details.'));
+  p.append(h('div', { class: 'card' },
+    h('div', {}, h('label', { for: 'f_step' }, 'Inject or step'), stepSel),
+    h('div', { class: 'row2' }, fld('trigger', 'Trigger and data used', true), fld('decision', 'Decision', true)),
+    h('div', { class: 'row2' }, fld('lead', 'Lead and authority (role)'), fld('partners', 'Supporting partners (roles)')),
+    h('div', { class: 'row2' }, fld('equity', 'Equity check: who benefits, who might be missed?', true), fld('gap', 'Data gap and improvement item', true)),
+    h('div', { class: 'actions' }, h('button', { class: 'pri', onclick: () => {
+      const e = { step: stepSel.value, at: Date.now() }; for (const k of Object.keys(f)) e[k] = f[k].value.trim();
+      if (!e.decision && !e.trigger) { toast('Add at least a decision or a trigger'); return; }
+      S.log.push(e); save(); render(); } }, 'Add entry'))));
+  if (!S.log.length) p.append(h('p', { class: 'empty' }, 'No decisions logged yet.'));
+  else {
+    const tb = h('tbody', {});
+    S.log.forEach((e, i) => tb.append(h('tr', {}, h('td', {}, String(i + 1)), h('td', {}, (stepById(e.step) || {}).id || ''), h('td', {}, e.trigger), h('td', {}, e.decision), h('td', {}, e.lead), h('td', {}, e.partners), h('td', {}, e.equity), h('td', {}, e.gap),
+      h('td', { class: 'noprint' }, h('button', { class: 'sm', 'aria-label': 'Delete entry ' + (i + 1), onclick: () => { if (confirm('Delete entry ' + (i + 1) + '?')) { S.log.splice(i, 1); save(); render(); } } }, 'Delete')))));
+    p.append(h('div', { style: 'overflow-x:auto' }, h('table', {}, h('thead', {}, h('tr', {}, ['#', 'Step', 'Trigger and data', 'Decision', 'Lead', 'Partners', 'Equity check', 'Data gap / improvement', ''].map(x => h('th', {}, x)))), tb)));
+  }
+}
+
+/* ---------- Improvements ---------- */
+function viewImprov(p) {
+  const cat = h('select', { id: 'i_cat' }, CATS.map(c => h('option', {}, c)));
+  const act = h('textarea', { id: 'i_act' }), own = h('input', { id: 'i_own', type: 'text' }), eq = h('textarea', { id: 'i_eq' });
+  p.append(h('h2', {}, 'Improvement plan'), h('p', { class: 'muted' }, 'Every gap becomes an item: an immediate fix, a 30, 60 or 90-day action, or a long-term investment. Use roles for owners.'));
+  p.append(h('div', { class: 'card' },
+    h('div', { class: 'row2' }, h('div', {}, h('label', { for: 'i_cat' }, 'Timeframe'), cat), h('div', {}, h('label', { for: 'i_own' }, 'Owner (role)'), own)),
+    h('div', { class: 'row2' }, h('div', {}, h('label', { for: 'i_act' }, 'Action'), act), h('div', {}, h('label', { for: 'i_eq' }, 'Equity impact and dependencies'), eq)),
+    h('div', { class: 'actions' }, h('button', { class: 'pri', onclick: () => {
+      if (!act.value.trim()) { toast('Add an action'); return; }
+      S.improv.push({ cat: cat.value, action: act.value.trim(), owner: own.value.trim(), equity: eq.value.trim() }); save(); render(); } }, 'Add item'))));
+  let any = false;
+  CATS.forEach(c => {
+    const items = S.improv.map((x, i) => [x, i]).filter(([x]) => x.cat === c); if (!items.length) return; any = true;
+    p.append(h('h3', {}, c), h('ul', {}, items.map(([x, i]) => h('li', {}, h('strong', {}, x.action), x.owner ? ' | Owner: ' + x.owner : '', x.equity ? ' | Equity and dependencies: ' + x.equity : '', ' ',
+      h('button', { class: 'sm noprint', 'aria-label': 'Delete item', onclick: () => { S.improv.splice(i, 1); save(); render(); } }, 'Delete')))));
+  });
+  if (!any) p.append(h('p', { class: 'empty' }, 'No items yet.'));
+}
+
+/* ---------- Cards ---------- */
+function viewCards(p) {
+  const big = h('div', {});
+  const show = (title, text) => { big.replaceChildren(h('div', { class: 'bigcard' }, h('strong', {}, title), h('div', {}, text), h('div', { class: 'actions' }, h('button', { class: 'sm', onclick: () => big.replaceChildren() }, 'Hide')))); big.scrollIntoView({ block: 'nearest' }); };
+  p.append(h('h2', {}, 'Role envelopes'), h('p', { class: 'muted' }, 'Copy the text and send it as a private message or email at the inject named. Fictional exercise content.'), big);
+  ENVELOPES.forEach(e => p.append(h('div', { class: 'card' },
+    h('h3', { style: 'margin-top:0' }, `Envelope ${e.id}: ${e.role}`), h('p', { class: 'muted' }, e.share + '. Decision forced: ' + e.forces), h('p', {}, e.text),
+    h('div', { class: 'actions' },
+      h('button', { onclick: () => copy(`Role card (fictional exercise): ${e.role}\n\n${e.text}\n\nFor this round only. Please keep it private until the facilitator asks you to share.`, 'Copied: Envelope ' + e.id) }, 'Copy message'),
+      h('button', { onclick: () => show(`Envelope ${e.id}: ${e.role}`, e.text) }, 'Show large')))));
+  p.append(h('h2', {}, 'Persona cards'), h('p', { class: 'muted' }, 'Used once, in the persona swap. These characters are fictional.'),
+    h('div', { class: 'actions' }, h('button', { class: 'pri', onclick: () => { const x = PERSONAS[Math.floor(Math.random() * PERSONAS.length)]; show(x.title, x.text); } }, 'Draw a random card')));
+  PERSONAS.forEach(x => p.append(h('div', { class: 'card' }, h('h3', { style: 'margin-top:0' }, x.title), h('p', {}, x.text),
+    h('div', { class: 'actions' }, h('button', { onclick: () => copy(x.title + '\n\n' + x.text, 'Copied persona') }, 'Copy'), h('button', { onclick: () => show(x.title, x.text) }, 'Show large')))));
+}
+
+/* ---------- Notes and export ---------- */
+const HOT = ['What worked well and should be kept?', 'Where did the response depend on people knowing each other instead of on a written protocol?', 'What was missing from the shared picture of the situation?', 'What is the one thing to fix before the next real heat wave?'];
+function exportText() {
+  const d = new Date(), L = [];
+  const gridTxt = g => NEIGH.map((n, r) => `  ${n}: ` + COLS.map((c, k) => `${c} = ${STATUS[g[r][k]]}`).join('; ')).join('\n');
+  L.push('BOSTON HEATSHIELD ONLINE ROUND 1: NOTES', 'Fictional exercise. All numbers are simulated. Not an official NOAA, NIHHIS or City of Boston product.', 'Notes are by role, not by name.', `Date: ${d.toLocaleDateString()}`, '');
+  L.push('TIME USED PER BLOCK'); BLOCKS.forEach((b, i) => L.push(`  ${b.name}: ${mmss(S.spent[i])} of ${b.mins}:00`));
+  L.push('', 'RISK BOARD (current)', gridTxt(S.risk));
+  SNAPS.forEach(([k, l]) => { if (S.snaps[k]) L.push('', 'RISK BOARD SNAPSHOT: ' + l, gridTxt(S.snaps[k].grid)); });
+  L.push('', 'DECISION LOG'); if (!S.log.length) L.push('  (none)');
+  S.log.forEach((e, i) => L.push(`  ${i + 1}. [${e.step}] Decision: ${e.decision || '-'}`, `     Trigger and data: ${e.trigger || '-'}`, `     Lead: ${e.lead || '-'}; Partners: ${e.partners || '-'}`, `     Equity check: ${e.equity || '-'}`, `     Data gap and improvement item: ${e.gap || '-'}`));
+  L.push('', 'IMPROVEMENT PLAN'); if (!S.improv.length) L.push('  (none)');
+  CATS.forEach(c => { const it = S.improv.filter(x => x.cat === c); if (it.length) { L.push('  ' + c); it.forEach(x => L.push(`    - ${x.action}` + (x.owner ? ` | Owner: ${x.owner}` : '') + (x.equity ? ` | Equity and dependencies: ${x.equity}` : ''))); } });
+  L.push('', 'HOTWASH'); HOT.forEach((q, i) => L.push(`  ${q}`, `    ${S.hot[i] || '-'}`));
+  L.push('', 'FACILITATOR NOTES', '  ' + (S.notes || '-'), '', 'Generated by the HeatShield Facilitator Board (DBbun LLC). Drafted with Claude Code (model claude-sonnet-5-5).');
+  return L.join('\n');
+}
+function viewNotes(p) {
+  p.append(h('h2', {}, 'Hotwash and notes'), h('p', { class: 'muted' }, 'Roles, not names. Leave out private health details. This text is saved only in this browser.'));
+  HOT.forEach((q, i) => { const ta = h('textarea', { id: 'hot' + i }); ta.value = S.hot[i] || ''; ta.oninput = () => { S.hot[i] = ta.value; save(); }; p.append(h('label', { for: 'hot' + i }, q), ta); });
+  const n = h('textarea', { id: 'notes', style: 'min-height:8em' }); n.value = S.notes; n.oninput = () => { S.notes = n.value; save(); };
+  p.append(h('label', { for: 'notes' }, 'Facilitator notes'), n);
+  p.append(h('h3', {}, 'Export and tools'), h('div', { class: 'actions' },
+    h('button', { class: 'pri', onclick: () => {
+      const blob = new Blob([exportText()], { type: 'text/plain;charset=utf-8' }), a = h('a', { href: URL.createObjectURL(blob), download: `HeatShield_Round1_notes_${new Date().toISOString().slice(0, 10)}.txt` });
+      document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); toast('Notes saved to your downloads'); } }, 'Download notes (.txt)'),
+    h('button', { onclick: () => copy(exportText(), 'Notes copied') }, 'Copy notes'),
+    h('button', { onclick: () => window.print() }, 'Print'),
+    h('button', { onclick: () => { S.large = !S.large; document.body.classList.toggle('large', S.large); save(); } }, 'Large text on or off'),
+    h('button', { onclick: () => { if (confirm('Clear ALL notes, the board, the log and the timers from this browser? This cannot be undone.')) { S = fresh(); running = false; save(); paintClock(); paintTabs(); render(); toast('Cleared'); } } }, 'Clear all data')));
+  p.append(h('p', { class: 'muted' }, 'Everything stays on this computer. On a shared computer, use "Clear all data" when you are finished.'));
+}
+
+document.body.classList.toggle('large', !!S.large);
+paintClock(); paintTabs(); render();
+})();
+</script>
+</body>
+</html>

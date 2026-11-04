@@ -14,13 +14,17 @@ Status: planning. Public data only. Everything simulated is labeled as simulated
 - `docs/` data-source table, method notes
 - `data_raw/` downloaded data, not tracked (only `manifest.json` is)
 
+## Facilitator board
+
+`board/index.html` is a single-page tool for running a short online heat exercise (timer, risk board, decision log, improvement sorter, role and persona cards). It has no dependencies; open the file in a browser. Notes stay in the browser's local storage on that device. It is a fictional exercise tool, not an official NOAA, NIHHIS or City of Boston product.
+
 ## Not in this repository
 
 The Situation Manual, correspondence with NOAA and other organizations, raw data files, credentials and participant records.
 
 ## License
 
-MIT (see LICENSE). The license covers the code and documentation in this repository only. Public datasets it downloads keep their own licenses and terms, and the Situation Manual is not included.
+Code: MIT (see LICENSE). Written exercise materials (for example the role envelopes, persona cards and rules text in the facilitator board): CC BY 4.0 (see LICENSE-MATERIALS.md). Public datasets the code downloads keep their own licenses and terms, and the Situation Manual is not included. The names "HeatShield" and "DBbun" are not licensed; "based on Boston HeatShield" is fine.
 
 ## AI disclosure
 
