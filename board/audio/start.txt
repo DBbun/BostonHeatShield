@@ -1,7 +1,11 @@
-This is the HeatShield Facilitator Board. It helps one person run a sixty-minute online heat exercise. Everything in it is fictional, with simulated numbers. It is not an official NOAA, NIHHIS or City of Boston product, and nothing you type leaves this device.
+Welcome. Here is what this is, in plain words.
 
-At the top is the clock. Press the blue play button to start, and use the arrows to move between parts. If you run over, the time turns red. The thin bar underneath shows your progress through the hour.
+Boston HeatShield is a practice run for a heat wave. A small group of people, each playing a real-world role, talk through an imagined week of dangerous heat in Boston. Maybe you are a neighbor, a nurse, a city worker, or someone from the power company. At each step the group gets a piece of news, and then decides together: who does what, and who should be told? This kind of exercise is called a tabletop exercise. Nothing real is at stake. The goal is to find the gaps in our plans before a real heat wave does.
 
-The tabs at the bottom are Run, Risk, Log, Plan, Cards and Notes. Each one has a Listen button like this. Sound never plays by itself.
+This board is for the person who leads the conversation. It keeps time, shows what to read aloud, and records what the group decides. The whole session takes sixty minutes.
 
-Before you begin, check that captions are on and recording is off. And download your notes at the end, because the board keeps everything only in this browser.
+Everything here is fictional, with simulated numbers. It is not an official NOAA, NIHHIS or City of Boston product, and nothing you type leaves this device.
+
+To use it: press the blue play button on the clock to start, and use the arrows to move between parts. If you run over, the time turns red. The tabs at the bottom are Run, Risk, Log, Plan, Cards and Notes. Each has a Listen button like this one, and sound never plays by itself.
+
+Before you begin, check that captions are on and recording is off. At the end, download your notes, because the board keeps everything only in this browser.

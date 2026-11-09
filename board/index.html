@@ -51,6 +51,7 @@ button{cursor:pointer}
 h3.sec{font-size:.8rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);margin:1.4rem 4px .5rem}
 
 /* cards, lists */
+.card>p:first-child{margin-top:0}.card>p:last-child{margin-bottom:0}
 .card{background:var(--card);border-radius:var(--r);padding:16px;margin:0 0 12px;box-shadow:var(--sh)}
 .list{background:var(--card);border-radius:var(--r);overflow:hidden;margin:0 0 12px;box-shadow:var(--sh)}
 .list>*+*{border-top:1px solid var(--line)}
@@ -288,7 +289,7 @@ const STEPS = [
 /* ---------- state ---------- */
 const KEY = 'heatshield.board.v1';
 const fresh = () => ({ block: 0, step: 0, spent: BLOCKS.map(() => 0), done: {}, todo: {}, risk: NEIGH.map(() => COLS.map(() => 0)),
-  snaps: {}, log: [], improv: [], hot: {}, notes: '', large: false, tab: 'run' });
+  snaps: {}, log: [], improv: [], hot: {}, notes: '', large: false, tab: 'guide' });
 let S = fresh();
 try { const o = JSON.parse(localStorage.getItem(KEY) || 'null'); if (o && typeof o === 'object') S = Object.assign(fresh(), o); } catch (e) {}
 if (!Array.isArray(S.spent) || S.spent.length !== BLOCKS.length) S.spent = BLOCKS.map(() => 0);
@@ -314,6 +315,7 @@ const ICON = {
   plan: '<path d="M6 21V4m0 1h12l-2.5 4L18 13H6"/>',
   cards: '<rect x="3" y="8" width="14" height="12" rx="2"/><path d="M7 8V6a2 2 0 012-2h10a2 2 0 012 2v9a2 2 0 01-2 2h-2"/>',
   notes: '<path d="M7 3h7l5 5v12a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+  guide: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.1"/>',
   phones: '<path d="M4 15v-3a8 8 0 0116 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
   chev: '<path d="M9 6l6 6-6 6"/>', check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', plus: '<path d="M12 5v14M5 12h14"/>',
   back: '<path d="M15 6l-6 6 6 6"/>', play: '<path d="M8 5.5v13l11-6.5z"/>', pause: '<path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/>',
@@ -341,7 +343,7 @@ $('prog').append(...progBars.map(x => x[0]));
 function setBlock(i) { S.block = Math.max(0, Math.min(BLOCKS.length - 1, i)); save(); paintClock(); }
 function paintClock() {
   const b = BLOCKS[S.block], left = b.mins * 60000 - S.spent[S.block];
-  $('blkName').textContent = b.name + ' · ' + b.mins + ' min';
+  $('blkName').textContent = b.name + ' · about ' + b.mins + ' min';
   const t = $('blkTime'); t.textContent = (left < 0 ? '+' : '') + mmss(left); t.classList.toggle('over', left < 0);
   $('totTime').textContent = mmss(S.spent.reduce((a, c) => a + c, 0)) + ' of 60:00';
   if (shownRun !== running) { shownRun = running; const r = $('runBtn'); r.replaceChildren(ico(running ? 'pause' : 'play')); r.setAttribute('aria-label', running ? 'Pause timer' : 'Start timer'); }
@@ -397,16 +399,65 @@ function openAbout() {
 $('aboutBtn').onclick = openAbout;
 
 /* ---------- tabs ---------- */
-const TABS = [['run', 'Run', 'run'], ['risk', 'Risk', 'risk'], ['log', 'Log', 'log'], ['improv', 'Plan', 'plan'], ['cards', 'Cards', 'cards'], ['notes', 'Notes', 'notes']];
+const TABS = [['guide', 'Guide', 'guide'], ['run', 'Run', 'run'], ['risk', 'Risk', 'risk'], ['log', 'Log', 'log'], ['improv', 'Plan', 'plan'], ['cards', 'Cards', 'cards'], ['notes', 'Notes', 'notes']];
 function paintTabs() {
   $('tabs').replaceChildren(...TABS.map(([id, label, ic]) =>
     h('button', { role: 'tab', 'aria-selected': S.tab === id ? 'true' : 'false', onclick: () => setTab(id) }, ico(ic), label)));
 }
 function render() {
   const p = $('panel'); p.replaceChildren();
-  ({ run: viewRun, risk: viewRisk, log: viewLog, improv: viewImprov, cards: viewCards, notes: viewNotes }[S.tab] || viewRun)(p);
+  ({ guide: viewGuide, run: viewRun, risk: viewRisk, log: viewLog, improv: viewImprov, cards: viewCards, notes: viewNotes }[S.tab] || viewRun)(p);
 }
 const head = (title, sub, lid) => [h('h1', { class: 'title' }, title), sub ? h('p', { class: 'sub' }, sub) : null, lid ? listen(lid) : null];
+
+
+/* ---------- Guide (start here) ---------- */
+const GUIDE_FLOW = [
+  ['Welcome', 5, 'Say hello, explain the rules, and make sure everyone knows their role.'],
+  ['Module 1: Outlook and Preparedness', 10, 'A week before the heat wave. The forecast is getting worse. Do you act now or wait?'],
+  ['Module 2: Heat Emergency and Power Stress', 28, 'Day 4 of the heat wave. Cooling centers fill up, the power gets shaky, and people are not getting the message. This is the longest part.'],
+  ['Module 3: Recovery and Resilience', 10, 'The heat breaks. Who checks on people, and what gets fixed so it goes better next time?'],
+  ['Hotwash and close', 7, 'A "hotwash" is a quick wrap-up talk right after the exercise: what worked, what did not, what to fix first.'],
+];
+const GUIDE_TABS = [
+  ['run', 'Run', 'The main screen. It shows what to read aloud, the questions to ask the group, and what to do next. Press "Done, Next" to move on.'],
+  ['risk', 'Risk', 'A simple scoreboard of five areas of Boston across five kinds of risk. Tap a circle to set it: check mark is OK, exclamation mark is Watch, X is Critical.'],
+  ['log', 'Log', 'Write down each decision the group makes: what, who owns it, and why. Use roles such as "city worker", never real names.'],
+  ['improv', 'Plan', 'Every gap the group finds becomes a small action with an owner and a timeframe: now, 30, 60 or 90 days, or long-term.'],
+  ['cards', 'Cards', 'Private messages for each player, and five made-up characters to help the group think about who gets left out.'],
+  ['notes', 'Notes', 'The wrap-up questions, your own notes, and the button to download everything when you are done.'],
+];
+const GLOSSARY = [
+  ['Tabletop exercise', 'A talk-through practice. No one goes anywhere or does anything real. People discuss what they would do in an imagined emergency.'],
+  ['Facilitator', 'The person who leads the conversation and uses this board. That is probably you.'],
+  ['Inject', 'A piece of news the facilitator reads out during the exercise, such as "a cooling center is over capacity". The group reacts to it.'],
+  ['Role', 'The job each participant plays for the hour, such as a nurse, a utility worker or a neighbor. Real experience helps, but nobody is graded.'],
+  ['Hotwash', 'The short wrap-up discussion at the end.'],
+  ['Cooling site', 'A public place such as a library or community center that stays cool and is open to anyone during extreme heat.'],
+  ['EMS', 'Emergency medical services: ambulances and paramedics.'],
+  ['Heat island', 'A neighborhood with lots of pavement and few trees that gets much hotter than greener areas nearby.'],
+  ['NOAA', 'The National Oceanic and Atmospheric Administration, a U.S. government science agency.'],
+  ['NIHHIS', 'The National Integrated Heat Health Information System, a federal program on heat and health. It ran the challenge this exercise won. It does not endorse this board.'],
+];
+function viewGuide(p) {
+  p.append(...head('How this works', 'Start here. Read it, or press Listen.', 'guide'));
+  p.append(h('h3', { class: 'sec' }, 'What is this?'), h('div', { class: 'card' },
+    h('p', {}, 'Boston HeatShield is a practice run for a dangerous heat wave. A small group meets online for one hour. Each person plays a real-world role. You are given news, step by step, and decide together what to do and who should do it.'),
+    h('p', {}, 'The goal is to find gaps in our plans before a real heat wave does. Nothing real is at stake, and no one is graded. The scenario and every number are made up.'),
+    h('p', {}, 'This board is for the person leading the conversation. It keeps time, shows what to read aloud, and records what the group decides.')));
+  p.append(h('h3', { class: 'sec' }, 'The hour, step by step'), h('div', { class: 'list' }, GUIDE_FLOW.map(([n, m, d]) =>
+    h('div', { class: 'row' }, h('span', { class: 'rt' }, h('b', {}, n + ' · about ' + m + ' min'), h('small', {}, d))))));
+  p.append(h('h3', { class: 'sec' }, 'What each tab does'), h('div', { class: 'list' }, GUIDE_TABS.map(([id, n, d]) =>
+    h('button', { class: 'row', onclick: () => setTab(id) }, h('span', { class: 'rt' }, h('b', { style: 'color:var(--acc)' }, n), h('small', {}, d)), ico('chev')))));
+  p.append(h('h3', { class: 'sec' }, 'Before you begin'), h('div', { class: 'card' }, h('ul', {},
+    h('li', {}, 'Turn captions on and recording off.'),
+    h('li', {}, 'Make sure each person has a role. If someone is missing, read their role envelope aloud.'),
+    h('li', {}, 'Ask everyone not to share private health details or confidential information.'),
+    h('li', {}, 'At the end, download your notes. The board keeps everything only in this browser.'))));
+  p.append(h('h3', { class: 'sec' }, 'Words explained'), h('div', { class: 'list' }, GLOSSARY.map(([t, d]) =>
+    h('div', { class: 'row' }, h('span', { class: 'rt' }, h('b', {}, t), h('small', {}, d))))));
+  p.append(h('div', { class: 'dock' }, h('button', { class: 'btn pri grow', onclick: () => setTab('run') }, 'Start the session', ico('chev', 'sm'))));
+}
 
 /* ---------- Run ---------- */
 function goStep(i) { S.step = i; S.block = STEPS[i].block; save(); paintClock(); render(); window.scrollTo(0, 0); }
@@ -419,7 +470,7 @@ function viewRun(p) {
   const cut = cur.title.indexOf(': ');
   const kicker = cur.kick || (cut > 0 ? cur.title.slice(0, cut) : cur.kind), title = cut > 0 ? cur.title.slice(cut + 2) : cur.title;
   p.append(dots,
-    h('div', { class: 'kick', style: 'color:' + col }, h('span', {}, kicker), h('span', { class: 'chip' }, cur.mins + ' min')),
+    h('div', { class: 'kick', style: 'color:' + col }, h('span', {}, kicker), h('span', { class: 'chip' }, 'About ' + cur.mins + ' min')),
     h('h1', { class: 'title' }, title),
     listen('s_' + cur.id.replace('.', '_'), "Listen: what's happening"));
   if (cur.envelope) {

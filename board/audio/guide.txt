@@ -1,0 +1,15 @@
+Welcome to Boston HeatShield. This page explains everything, in plain words.
+
+First, what is it? It is a practice run for a dangerous heat wave in Boston. A small group meets online for one hour. Each person plays a real-world role, for example a nurse, a city worker, a utility worker or a neighbor. The facilitator reads out news, one piece at a time, and the group decides together what to do, and who should do it. This is called a tabletop exercise. Nobody goes anywhere and nothing real happens. The point is to find the gaps in our plans before a real heat wave does. No one is graded, and there are no wrong answers.
+
+The board is for the person who leads the conversation, the facilitator. It keeps time, shows what to read aloud, and records what the group decides.
+
+Now, the hour itself. It has five parts. Welcome takes about five minutes. Then Module 1, about ten minutes, is the week before the heat wave, when the forecast is getting worse and the question is whether to act now or wait. Module 2, about twenty-eight minutes, is the longest part. It is day four of the heat wave. Cooling centers fill up, the power gets shaky, and some people are not getting the message. Module 3, about ten minutes, is recovery. Who checks on people, and what gets fixed for next time? The last part, about seven minutes, is called a hotwash. That is just a short wrap-up talk: what worked, what did not, and what to fix first.
+
+At the bottom of the screen are tabs. Guide is this page. Run is the main screen. It shows what to read aloud, the questions to ask, and what to do next. Press Done, Next to move on. Risk is a simple scoreboard. Five areas of Boston are listed down the side, and five kinds of risk across the top. Tap a circle to set it: a check mark means okay, an exclamation mark means watch, and an X means critical. Log is where you write down each decision, who owns it, and why. Use roles, never real names. Plan turns every gap into a small action with an owner and a timeframe. Cards holds private messages for each player, and five made-up characters that help the group think about who gets left out. Notes has the wrap-up questions, space for your own notes, and the button to download everything.
+
+At the bottom of this page is a short list of words explained, such as inject, hotwash, cooling site and E M S.
+
+Before you begin, turn captions on and recording off. Make sure each person has a role. Ask everyone not to share private health details or confidential information. And at the end, download your notes, because the board keeps everything only in this browser.
+
+Everything here is fictional, with simulated numbers. It is not an official NOAA, NIHHIS or City of Boston project. When you are ready, press Start the session.
